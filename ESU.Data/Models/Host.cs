@@ -1,0 +1,27 @@
+﻿using System.Collections.Generic;
+
+namespace ESU.Data.Models
+{
+    public class Host : Row
+    {
+        public string Name { get; set; }
+
+        public string Network { get; set; }
+
+        public string Identity { get; set; }
+
+        public string Site { get; set; }
+
+        public string Mail { get; set; }
+
+        public string OsBuild { get; set; }
+
+        public string OsVersion { get; set; }
+
+        public bool Is64BitOperatingSystem { get; set; }
+
+        public ICollection<License> License { get; set; }
+
+        public ICollection<ProcessingStatus> ProcessingStatus { get; set; }
+    }
+}
