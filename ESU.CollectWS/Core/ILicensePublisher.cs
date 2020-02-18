@@ -1,4 +1,5 @@
 ﻿using ESU.Data.Models;
+using System.Threading.Tasks;
 
 namespace ESU.CollectWS.Core
 {

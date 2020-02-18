@@ -1,4 +1,6 @@
-﻿namespace ESU.Data.Models
+﻿using System.Collections.ObjectModel;
+
+namespace ESU.Data.Models
 {
     public class License : Row
     {
@@ -9,5 +11,7 @@
         public int HostId { get; set; }
 
         public Host Host { get; set; }
+
+        public Collection<Confirmation> Confirmations { get; set; }
     }
 }

@@ -27,10 +27,10 @@ namespace ESU.CollectWS.Controllers
             return await this.context.Licenses.ToListAsync();
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<License>> GetById(int id)
+        [HttpGet("{installationId}")]
+        public async Task<ActionResult<License>> GetById(string installationId)
         {
-            var license = await this.context.Licenses.FindAsync(id);
+            var license = await this.context.Licenses.FirstOrDefaultAsync(x => x.InstallationId == installationId);
             if (license != null)
             {
                 return license;
@@ -44,7 +44,7 @@ namespace ESU.CollectWS.Controllers
         {
             this.context.Licenses.Add(license);
             await this.context.SaveChangesAsync();
-            return CreatedAtAction(nameof(this.GetById), new { license.Id }, license);
+            return CreatedAtAction(nameof(this.GetById), new { license.InstallationId }, license);
         }
     }
 }

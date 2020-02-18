@@ -21,6 +21,7 @@ namespace ESU.CollectWS.Core
         {
             var request = new RestRequest();
             request.Method = Method.POST;
+            this.restClient.Execute(request);
         }
     }
 }

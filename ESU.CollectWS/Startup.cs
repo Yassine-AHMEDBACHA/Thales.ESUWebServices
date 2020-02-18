@@ -23,8 +23,8 @@ namespace ESU.CollectWS
         {
             services.AddControllers();
             services.AddDbContext<ESUContext>();
-            services.AddMvc().AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
             services.AddSingleton<ILicensePublisher, LicensePublisher>();
+            services.AddMvc().AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
