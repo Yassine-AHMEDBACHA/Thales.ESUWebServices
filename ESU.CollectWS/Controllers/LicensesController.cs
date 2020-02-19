@@ -5,6 +5,7 @@ using ESU.Data;
 using ESU.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace ESU.CollectWS.Controllers
 {
@@ -12,18 +13,21 @@ namespace ESU.CollectWS.Controllers
     [ApiController]
     public class LicensesController : ControllerBase
     {
+        private readonly ILogger<LicensesController> logger;
         private readonly ESUContext context;
-        private readonly ILicensePublisher licensePublisher;
+        //private readonly ILicensePublisher licensePublisher;
 
-        public LicensesController(ESUContext context, ILicensePublisher licensePublisher)
+        public LicensesController(ESUContext context, ILogger<LicensesController> logger)
         {
+            this.logger = logger; 
             this.context = context;
-            this.licensePublisher = licensePublisher;
+            //this.licensePublisher = licensePublisher;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<License>>> GetAll()
         {
+            this.logger.LogInformation("requesting all licenses");
             return await this.context.Licenses.ToListAsync();
         }
 

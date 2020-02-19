@@ -14,10 +14,10 @@ namespace ESU.ConfirmationWS.Core
 {
     public class ConfirmationProvider : IConfirmationProvider
     {
-        private const string Resource = "msactivations";
+        //private const string Resource = "msactivations";
         private readonly ILogger<ConfirmationProvider> logger;
         private readonly IConfiguration configuration;
-        private readonly RestClient restClient;
+        //private readonly RestClient restClient;
         private readonly string url;
 
         public ConfirmationProvider(IConfiguration configuration, ILogger<ConfirmationProvider> logger)
@@ -25,11 +25,12 @@ namespace ESU.ConfirmationWS.Core
             this.logger = logger;
             this.configuration = configuration;
             this.url = this.configuration.GetValue<string>("Url");
-            this.restClient = new RestClient(url);
+            //this.restClient = new RestClient(url);
         }
 
         public Confirmation GetConfirmation(string installationId, string extendedProductId)
         {
+            this.logger.LogInformation("Requesting confirmation for installationId" + installationId);
             var confirmation = new Confirmation
             {
                 RequestDate = DateTime.Now
@@ -39,11 +40,13 @@ namespace ESU.ConfirmationWS.Core
             confirmation.ResponseDate = DateTime.Now;
             if(isSucces) 
             {
+                this.logger.LogInformation("Requesting confirmation for installationId Succes");
                 confirmation.Status = Status.Success;
                 confirmation.Content = confirmationKey;
             }
             else
             {
+                this.logger.LogInformation("Requesting confirmation for installationId failed");
                 confirmation.Status = Status.Failed;
                 confirmation.Content = Status.Failed.ToString();
             }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using Serilog;
 
 namespace ESU.ConfirmationWS
 {
@@ -13,6 +14,11 @@ namespace ESU.ConfirmationWS
     {
         public Startup(IConfiguration configuration)
         {
+           Log.Logger = new LoggerConfiguration()
+               .ReadFrom
+               .Configuration(configuration)
+               .CreateLogger();
+
             Configuration = configuration;
         }
 
@@ -21,6 +27,7 @@ namespace ESU.ConfirmationWS
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHealthChecks();
             services.AddDbContext<ESUContext>(ServiceLifetime.Singleton);
             services.AddSingleton<IConfirmationProvider, ConfirmationProvider>();
             services.AddSingleton<ILicenseActivator, LicenseActivator>();
@@ -35,6 +42,8 @@ namespace ESU.ConfirmationWS
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseHealthChecks("/api/conf/ishealthy");
 
             app.UseHttpsRedirection();
 

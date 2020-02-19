@@ -12,16 +12,17 @@ namespace ESU.CollectWS.Core
 
         public LicensePublisher(IConfiguration configuration)
         {
-            this.configuration = configuration;
-            var server = this.configuration.GetValue<string>("Url");
-            this.restClient = new RestClient(server);
+            //this.configuration = configuration;
+            //var server = this.configuration.GetValue<string>("Url");
+            //this.restClient = new RestClient(server);
         }
 
         public void Publish(License license)
         {
-            var request = new RestRequest();
-            request.Method = Method.POST;
-            this.restClient.Execute(request);
+            //return;
+            //var request = new RestRequest();
+            //request.Method = Method.POST;
+            //this.restClient.Execute(request);
         }
     }
 }

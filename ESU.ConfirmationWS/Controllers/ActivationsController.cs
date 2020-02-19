@@ -1,22 +1,26 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using ESU.ConfirmationWS.Core;
 using ESU.Data;
 using ESU.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace ESU.ConfirmationWS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LicensesController : Controller
+    public class ActivationsController : Controller
     {
+        private readonly ILogger<ActivationsController> logger;
         private readonly ILicenseActivator licenseActivator;
         private ESUContext context;
 
-        public LicensesController(ESUContext context, ILicenseActivator licenseActivator)
+        public ActivationsController(ESUContext context, ILicenseActivator licenseActivator, ILogger<ActivationsController> logger)
         {
+            this.logger = logger;
             this.licenseActivator = licenseActivator;
             this.context = context;
         }
@@ -27,9 +31,16 @@ namespace ESU.ConfirmationWS.Controllers
             return await this.context.Licenses.ToListAsync();
         }
 
+        [HttpGet("lastrun")]
+        public DateTime GetLastRun()
+        {
+            return this.licenseActivator.LastRun;
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<License>> GetById(int id)
         {
+            this.logger.LogInformation("requesting license with id : " + id);
             var license = await this.context.Licenses.FindAsync(id);
             if (license != null)
             {

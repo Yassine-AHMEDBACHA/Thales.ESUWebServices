@@ -1,5 +1,7 @@
 ﻿using ESU.Data;
 using ESU.Data.Models;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Timers;
@@ -8,13 +10,17 @@ namespace ESU.ConfirmationWS.Core
 {
     public class LicenseActivator : ILicenseActivator
     {
+        private readonly ILogger<LicenseActivator> logger;
         private readonly IConfirmationProvider confirmationProvider;
         private readonly ESUContext context;
         private readonly ConcurrentQueue<License> licenses;
         private readonly Timer timer;
 
-        public LicenseActivator(ESUContext context, IConfirmationProvider confirmationProvider)
+        public DateTime LastRun { get; private set; }
+
+        public LicenseActivator(ESUContext context, IConfirmationProvider confirmationProvider, ILogger<LicenseActivator> logger)
         {
+            this.logger = logger;
             this.confirmationProvider = confirmationProvider;
             this.context = context;
             this.licenses = new ConcurrentQueue<License>();
@@ -35,6 +41,7 @@ namespace ESU.ConfirmationWS.Core
 
         private void Loop()
         {
+            this.LastRun = DateTime.Now;
             if (this.licenses.IsEmpty)
             {
                 this.LoadlicencesToActivate();
@@ -59,6 +66,8 @@ namespace ESU.ConfirmationWS.Core
             {
                 this.licenses.Enqueue(item);
             }
+
+            this.logger.LogInformation($"Processing {this.licenses.Count} license(s)...");
         }
     }
 }
