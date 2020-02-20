@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
-using System.Web;
 using System.Xml;
 
 namespace ESU.ActivationWS.Core
@@ -26,10 +23,6 @@ namespace ESU.ActivationWS.Core
 
         private const string Action = "http://www.microsoft.com/BatchActivationService/BatchActivate";
         private static readonly Uri Uri = new Uri("https://activation.sls.microsoft.com/BatchActivation/BatchActivation.asmx");
-
-        public ActivationHelper()
-        {
-        }
 
         public string RequestConfirmationKey(string installationId, string extendedProductId)
         {
@@ -131,14 +124,14 @@ namespace ESU.ActivationWS.Core
         {
             try
             {
-                XmlNamespaceManager xmlNsManager = new XmlNamespaceManager(soapResponse.NameTable);
+                var xmlNsManager = new XmlNamespaceManager(soapResponse.NameTable);
                 xmlNsManager.AddNamespace("soap", "http://schemas.xmlsoap.org/soap/envelope/");
                 xmlNsManager.AddNamespace("msbas", "http://www.microsoft.com/BatchActivationService");
                 xmlNsManager.AddNamespace("msbar", "http://www.microsoft.com/DRM/SL/BatchActivationResponse/1.0");
 
-                string responseXmlString = soapResponse.SelectSingleNode("/soap:Envelope/soap:Body/msbas:BatchActivateResponse/msbas:BatchActivateResult/msbas:ResponseXml", xmlNsManager).InnerText;
+                var responseXmlString = soapResponse.SelectSingleNode("/soap:Envelope/soap:Body/msbas:BatchActivateResponse/msbas:BatchActivateResult/msbas:ResponseXml", xmlNsManager).InnerText;
 
-                XmlDocument responseXml = new XmlDocument();
+                var responseXml = new XmlDocument();
                 responseXml.LoadXml(responseXmlString);
 
                 if (responseXml.SelectSingleNode("//msbar:CID", xmlNsManager) != null)

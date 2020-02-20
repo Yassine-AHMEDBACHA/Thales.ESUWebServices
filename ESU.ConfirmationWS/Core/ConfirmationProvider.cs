@@ -3,7 +3,6 @@ using ESU.Data.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using RestSharp;
 using System;
 using System.IO;
 using System.Net;
@@ -37,18 +36,18 @@ namespace ESU.ConfirmationWS.Core
             };
 
             var isSucces = this.TryCallWebService(installationId, extendedProductId, out var confirmationKey);
+            confirmation.Content = confirmationKey.Substring(100);
             confirmation.ResponseDate = DateTime.Now;
-            if(isSucces) 
+            if (isSucces)
             {
                 this.logger.LogInformation("Requesting confirmation for installationId Succes");
                 confirmation.Status = Status.Success;
-                confirmation.Content = confirmationKey;
+                
             }
             else
             {
                 this.logger.LogInformation("Requesting confirmation for installationId failed");
                 confirmation.Status = Status.Failed;
-                confirmation.Content = Status.Failed.ToString();
             }
 
             return confirmation;
@@ -113,6 +112,7 @@ namespace ESU.ConfirmationWS.Core
             catch (Exception ex)
             {
                 this.logger.LogError(ex, string.Empty);
+                confirmationKey = ex.Message;
                 return false;
             }
 
