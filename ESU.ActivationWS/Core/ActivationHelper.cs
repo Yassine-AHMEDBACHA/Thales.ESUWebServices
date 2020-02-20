@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Security.Cryptography;
@@ -23,13 +25,25 @@ namespace ESU.ActivationWS.Core
 
         private const string Action = "http://www.microsoft.com/BatchActivationService/BatchActivate";
         private static readonly Uri Uri = new Uri("https://activation.sls.microsoft.com/BatchActivation/BatchActivation.asmx");
+        private readonly ILogger<ActivationHelper> logger;
+
+        public ActivationHelper(ILogger<ActivationHelper> logger)
+        {
+            this.logger = logger;
+        }
 
         public string RequestConfirmationKey(string installationId, string extendedProductId)
         {
             var soapRequest = CreateSoapRequest(installationId, extendedProductId);
             var webRequest = CreateWebRequest(soapRequest);
-            var soapResponse = new XmlDocument();
+            var soapResponse = GetResponse(webRequest);
+            return ParseSoapResponse(soapResponse);
+        }
 
+        private static XmlDocument GetResponse(HttpWebRequest webRequest)
+        {
+            var soapResponse = new XmlDocument();
+            var stopwatch = Stopwatch.StartNew();
             try
             {
                 var asyncResult = webRequest.BeginGetResponse(null, null);
@@ -40,15 +54,16 @@ namespace ESU.ActivationWS.Core
                 using (StreamReader streamReader = new StreamReader(webResponse.GetResponseStream()))
                 {
                     soapResponse.LoadXml(streamReader.ReadToEnd());
+                    stopwatch.Stop();
                 }
 
             }
             catch (Exception ex)
             {
-                throw new Exception("Exception calling 'CallWebservice': " + ex.Message);
+                throw new WebRequestException("Exception calling 'CallWebservice': " + ex.Message, ex);
             }
 
-            return ParseSoapResponse(soapResponse);
+            return soapResponse;
         }
 
         private static XmlDocument CreateSoapRequest(string installationId, string extendedProductId)
@@ -97,7 +112,7 @@ namespace ESU.ActivationWS.Core
 
         private HttpWebRequest CreateWebRequest(XmlDocument soapRequest)
         {
-            HttpWebRequest webRequest = (HttpWebRequest)WebRequest.Create(Uri);
+            var webRequest = (HttpWebRequest)WebRequest.Create(Uri);
             webRequest.Accept = "text/xml";
             webRequest.ContentType = "text/xml; charset=\"utf-8\"";
             webRequest.Headers.Add("SOAPAction", Action);
@@ -114,7 +129,7 @@ namespace ESU.ActivationWS.Core
             }
             catch (Exception ex)
             {
-                throw new Exception("Exception calling 'CreateWebRequest': " + ex.Message);
+                throw new WebRequestException("Exception calling 'CreateWebRequest': " + ex.Message);
             }
 
             return webRequest;
@@ -122,40 +137,30 @@ namespace ESU.ActivationWS.Core
 
         private string ParseSoapResponse(XmlDocument soapResponse)
         {
-            try
+            var xmlNsManager = new XmlNamespaceManager(soapResponse.NameTable);
+            xmlNsManager.AddNamespace("soap", "http://schemas.xmlsoap.org/soap/envelope/");
+            xmlNsManager.AddNamespace("msbas", "http://www.microsoft.com/BatchActivationService");
+            xmlNsManager.AddNamespace("msbar", "http://www.microsoft.com/DRM/SL/BatchActivationResponse/1.0");
+
+            var responseXmlString = soapResponse.SelectSingleNode("/soap:Envelope/soap:Body/msbas:BatchActivateResponse/msbas:BatchActivateResult/msbas:ResponseXml", xmlNsManager).InnerText;
+
+            XmlDocument responseXml = new XmlDocument();
+            responseXml.LoadXml(responseXmlString);
+
+            if (responseXml.SelectSingleNode("//msbar:CID", xmlNsManager) != null)
             {
-                var xmlNsManager = new XmlNamespaceManager(soapResponse.NameTable);
-                xmlNsManager.AddNamespace("soap", "http://schemas.xmlsoap.org/soap/envelope/");
-                xmlNsManager.AddNamespace("msbas", "http://www.microsoft.com/BatchActivationService");
-                xmlNsManager.AddNamespace("msbar", "http://www.microsoft.com/DRM/SL/BatchActivationResponse/1.0");
-
-                var responseXmlString = soapResponse.SelectSingleNode("/soap:Envelope/soap:Body/msbas:BatchActivateResponse/msbas:BatchActivateResult/msbas:ResponseXml", xmlNsManager).InnerText;
-
-                var responseXml = new XmlDocument();
-                responseXml.LoadXml(responseXmlString);
-
-                if (responseXml.SelectSingleNode("//msbar:CID", xmlNsManager) != null)
-                {
-                    string confirmationId = responseXml.SelectSingleNode("//msbar:CID", xmlNsManager).InnerText;
-                    return confirmationId;
-
-                }
-                else if (responseXml.SelectSingleNode("//msbar:ErrorCode", xmlNsManager) != null)
-                {
-                    string errorCode = responseXml.SelectSingleNode("//msbar:ErrorCode", xmlNsManager).InnerText;
-                    throw new Exception("The Confirmation ID could not be retrieved (" + errorCode + ")");
-
-                }
-                else
-                {
-                    throw new Exception("The SOAP response could not be parsed.");
-                }
+                string confirmationId = responseXml.SelectSingleNode("//msbar:CID", xmlNsManager).InnerText;
+                return confirmationId;
 
             }
-            catch (Exception ex)
+            else if (responseXml.SelectSingleNode("//msbar:ErrorCode", xmlNsManager) != null)
             {
-                throw new Exception("Exception calling 'ParseSoapResponse': " + ex.Message);
+                string errorCode = responseXml.SelectSingleNode("//msbar:ErrorCode", xmlNsManager).InnerText;
+                throw new MsException("The Confirmation ID could not be retrieved (" + errorCode + ")");
+
             }
+
+            throw new ParsingException("The SOAP response could not be parsed.");
         }
     }
 }

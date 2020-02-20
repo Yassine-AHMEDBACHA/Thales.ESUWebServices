@@ -1,5 +1,6 @@
 ﻿using ESU.Data;
 using ESU.Data.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
@@ -18,20 +19,34 @@ namespace ESU.ConfirmationWS.Core
 
         public DateTime LastRun { get; private set; }
 
-        public LicenseActivator(ESUContext context, IConfirmationProvider confirmationProvider, ILogger<LicenseActivator> logger)
+        private IConfiguration confirguration;
+
+        public DateTime FirstRun { get; private set; }
+
+        public LicenseActivator(IConfiguration confirguration, ESUContext context, IConfirmationProvider confirmationProvider, ILogger<LicenseActivator> logger)
         {
+            this.confirguration = confirguration;
+            this.FirstRun = DateTime.Now;
             this.logger = logger;
             this.confirmationProvider = confirmationProvider;
             this.context = context;
             this.licenses = new ConcurrentQueue<License>();
-            this.timer = new Timer
+            this.timer = this.GetTimer(this.confirguration);
+
+            this.Loop();
+        }
+
+        private Timer GetTimer(IConfiguration confirguration)
+        {
+            var runFrequency = confirguration.GetValue("RunFrequency", 60);
+            var timer = new Timer
             {
-                Interval = 1000 * 30,
+                Interval = 1000 * runFrequency,
                 AutoReset = false
             };
 
-            this.timer.Elapsed += (s, e) => this.Loop();
-            this.Loop();
+            timer.Elapsed += (s, e) => this.Loop();
+            return timer;
         }
 
         public void Append(License license)

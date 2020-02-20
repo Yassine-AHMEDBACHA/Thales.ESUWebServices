@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Events;
 
 namespace ESU.ActivationWS
 {
@@ -19,9 +20,11 @@ namespace ESU.ActivationWS
     {
         public Startup(IConfiguration configuration)
         {
+            var logFilePath = configuration.GetValue("LogFilePath", "C://Logs//ActivationWS-{Date}.txt");
+            var logEventLevel = configuration.GetValue("LogEventLevel", LogEventLevel.Information);
             Log.Logger = new LoggerConfiguration()
-                .ReadFrom
-                .Configuration(configuration)
+                .WriteTo.RollingFile(logFilePath)
+                .MinimumLevel.Is(logEventLevel)
                 .CreateLogger();
 
             Configuration = configuration;
@@ -32,6 +35,7 @@ namespace ESU.ActivationWS
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHealthChecks();
             services.AddControllers();
             services.AddSingleton<IActivationHelper, ActivationHelper>();
         }
@@ -45,6 +49,8 @@ namespace ESU.ActivationWS
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseHealthChecks("/api/ishealthy");
 
             app.UseHttpsRedirection();
 

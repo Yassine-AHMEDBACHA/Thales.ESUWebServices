@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Serilog;
+using Serilog.Events;
 
 namespace ESU.ConfirmationWS
 {
@@ -15,12 +16,14 @@ namespace ESU.ConfirmationWS
     {
         public Startup(IConfiguration configuration)
         {
-           Log.Logger = new LoggerConfiguration()
-               .ReadFrom
-               .Configuration(configuration)
-               .CreateLogger();
+            var logFilePath = configuration.GetValue("LogFilePath", "C://Logs//CollectWS-{Date}.txt");
+            var logEventLevel = configuration.GetValue("LogEventLevel", LogEventLevel.Information);
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.RollingFile(logFilePath)
+                .MinimumLevel.Is(logEventLevel)
+                .CreateLogger();
 
-            this.Configuration = configuration;
+            Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
@@ -45,7 +48,7 @@ namespace ESU.ConfirmationWS
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHealthChecks("/api/conf/ishealthy");
+            app.UseHealthChecks("/api/ishealthy");
 
             app.UseHttpsRedirection();
 

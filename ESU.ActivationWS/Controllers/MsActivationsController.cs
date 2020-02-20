@@ -1,6 +1,8 @@
 ﻿using ESU.ActivationWS.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Net;
 
 namespace ESU.ActivationWS.Controllers
 {
@@ -18,11 +20,27 @@ namespace ESU.ActivationWS.Controllers
         }
 
         [HttpGet("{installationId}&{extendedProductId}")]
-        public string Get(string installationId, string extendedProductId)
+        public ActionResult<string> Get(string installationId, string extendedProductId)
         {
             this.logger.LogInformation("Requesting data for installationId");
-            var result = this.activationHelper.RequestConfirmationKey(installationId, extendedProductId);
-            return result;
+
+            try
+            {
+                var result = this.activationHelper.RequestConfirmationKey(installationId, extendedProductId);
+                return Ok(result);
+            }
+            catch (MsException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (WebRequestException ex)
+            {
+                return Problem(ex.Message, statusCode: (int)HttpStatusCode.FailedDependency);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
         }
     }
 }
