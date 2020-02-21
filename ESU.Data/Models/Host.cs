@@ -20,7 +20,7 @@ namespace ESU.Data.Models
 
         public bool Is64BitOperatingSystem { get; set; }
 
-        public ICollection<License> License { get; set; }
+        public List<License> Licenses { get; set; }
 
         public ICollection<ProcessingStatus> ProcessingStatus { get; set; }
     }

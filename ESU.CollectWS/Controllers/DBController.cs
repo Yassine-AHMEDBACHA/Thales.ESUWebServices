@@ -22,7 +22,7 @@ namespace ESU.CollectWS.Controllers
         [HttpPost()]
         public IActionResult RunQuery(DBQuery query)
         {
-            var result = this.context.Database.ExecuteSqlCommand(query.Query);
+            var result = this.context.Database.ExecuteSqlRaw(query.Query);
             return Ok(result);
         }
     }

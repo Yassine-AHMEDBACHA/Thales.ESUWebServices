@@ -18,7 +18,7 @@ namespace ESU.Monitoring.Controllers
         [HttpGet]
         public void Get()
         {
-
+            
         }
     }
 }

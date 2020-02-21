@@ -26,7 +26,7 @@ namespace ESU.CollectWS.Controllers
         public async Task<ActionResult<IEnumerable<Host>>> GetAllHosts()
         {
             this.logger.LogInformation("Requesting all hosts on the server");
-            return await context.Hosts.Include(x => x.License).ToListAsync();
+            return await context.Hosts.Include(x => x.Licenses).ToListAsync();
         }
 
         [HttpGet("{id}")]

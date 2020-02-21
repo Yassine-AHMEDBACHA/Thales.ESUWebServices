@@ -25,9 +25,10 @@ namespace ESU.ConfirmationWS.Core
 
         public LicenseActivator(IConfiguration confirguration, ESUContext context, IConfirmationProvider confirmationProvider, ILogger<LicenseActivator> logger)
         {
+            this.logger = logger;
             this.confirguration = confirguration;
             this.FirstRun = DateTime.Now;
-            this.logger = logger;
+            this.logger.LogInformation("Starting license activator...");
             this.confirmationProvider = confirmationProvider;
             this.context = context;
             this.licenses = new ConcurrentQueue<License>();
@@ -61,7 +62,7 @@ namespace ESU.ConfirmationWS.Core
             {
                 this.LoadlicencesToActivate();
             }
-
+            this.logger.LogInformation(this.licenses.Count + " license(s) to activate...");
             while (!this.licenses.IsEmpty)
             {
                 this.licenses.TryDequeue(out var license);
@@ -70,7 +71,7 @@ namespace ESU.ConfirmationWS.Core
                 this.context.Confirmations.Add(confirmation);
                 this.context.SaveChanges();
             }
-
+            this.logger.LogInformation("Done.");
             this.timer.Start();
         }
 

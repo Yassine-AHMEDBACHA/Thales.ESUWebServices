@@ -7,6 +7,8 @@ namespace ESU.ConfirmationWS.Core
     {
         DateTime LastRun { get; }
 
+        DateTime FirstRun { get; }
+
         void Append(License license);
     }
 }

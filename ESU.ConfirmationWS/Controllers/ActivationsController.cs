@@ -37,6 +37,12 @@ namespace ESU.ConfirmationWS.Controllers
             return this.licenseActivator.LastRun;
         }
 
+        [HttpGet("firstrun")]
+        public DateTime GeFirstRun()
+        {
+            return this.licenseActivator.FirstRun;
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<License>> GetById(int id)
         {
@@ -53,6 +59,7 @@ namespace ESU.ConfirmationWS.Controllers
         [HttpPost]
         public void Post(License license)
         {
+            this.logger.LogInformation("Appending license with installation id : " + license?.InstallationId);
             this.licenseActivator.Append(license);
         }
 
