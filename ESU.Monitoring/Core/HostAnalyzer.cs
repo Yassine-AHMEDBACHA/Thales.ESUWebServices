@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace ESU.Monitoring.Core
 {
-    public class HostStatusComputer
+    public class HostAnalyzer
     {
         public IEnumerable<string> GetHostTrace(Host host)
         {
@@ -42,7 +42,7 @@ namespace ESU.Monitoring.Core
                 }
                 else
                 {
-                    foreach (var message in host.ProcessingStatus.Select(x => x.Message))
+                    foreach (var message in host.ProcessingStatus.GroupBy(x => x.Message).Select(g => g.Key))
                     {
                         yield return message;
                     }

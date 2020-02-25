@@ -34,7 +34,7 @@ namespace ESU.Monitoring
         {
             services.AddHealthChecks();
             services.AddControllers();
-            services.AddSingleton<HostStatusComputer>();
+            services.AddSingleton<HostAnalyzer>();
             services.AddSingleton<ServiceHealthyChecker>();
             services.AddDbContext<ESUContext>();
             services.AddMvc().AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);

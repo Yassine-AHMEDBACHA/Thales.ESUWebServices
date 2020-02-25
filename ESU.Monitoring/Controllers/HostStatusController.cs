@@ -16,13 +16,13 @@ namespace ESU.Monitoring.Controllers
     [Route("api/[controller]")]
     public class HostStatusController : ControllerBase
     {
-        private readonly HostStatusComputer hostStatusComputer;
+        private readonly HostAnalyzer hostAnalyzer;
         private readonly ILogger<HostStatusController> logger;
         private readonly ESUContext context;
 
-        public HostStatusController(ILogger<HostStatusController> logger, ESUContext context, HostStatusComputer hostStatusComputer)
+        public HostStatusController(ILogger<HostStatusController> logger, ESUContext context, HostAnalyzer hostAnalyzer)
         {
-            this.hostStatusComputer = hostStatusComputer;
+            this.hostAnalyzer = hostAnalyzer;
             this.logger = logger;
             this.context = context;
         }
@@ -60,7 +60,7 @@ namespace ESU.Monitoring.Controllers
             {
                 return NotFound();
             }
-            var result = hosts.Select(h => new { Trace = this.hostStatusComputer.GetHostTrace(h) })
+            var result = hosts.Select(h => new { Trace = this.hostAnalyzer.GetHostTrace(h), h.Name })
                 .Select(s => new { Status = s.Trace.LastOrDefault(), s.Trace });
 
             return Ok(result);
