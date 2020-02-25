@@ -19,7 +19,7 @@ namespace ESU.CollectWS.Controllers
 
         public LicensesController(ESUContext context, ILogger<LicensesController> logger)
         {
-            this.logger = logger; 
+            this.logger = logger;
             this.context = context;
             //this.licensePublisher = licensePublisher;
         }
@@ -46,6 +46,7 @@ namespace ESU.CollectWS.Controllers
         [HttpPost]
         public async Task<ActionResult> Post(License license)
         {
+            this.logger.LogDebug("Adding license : " + license?.InstallationId);
             this.context.Licenses.Add(license);
             await this.context.SaveChangesAsync();
             return CreatedAtAction(nameof(this.GetById), new { license.InstallationId }, license);

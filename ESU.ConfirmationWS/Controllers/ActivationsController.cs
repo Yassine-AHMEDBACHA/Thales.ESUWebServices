@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using ESU.ConfirmationWS.Core;
+﻿using ESU.ConfirmationWS.Core;
 using ESU.Data;
 using ESU.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ESU.ConfirmationWS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ActivationsController : Controller
+    public class ActivationsController : ControllerBase
     {
         private readonly ILogger<ActivationsController> logger;
         private readonly ILicenseActivator licenseActivator;
@@ -61,16 +61,6 @@ namespace ESU.ConfirmationWS.Controllers
         {
             this.logger.LogInformation("Appending license with installation id : " + license?.InstallationId);
             this.licenseActivator.Append(license);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if(disposing)
-            {
-                this.context = null;
-            }
-
-            base.Dispose(disposing);
         }
     }
 }

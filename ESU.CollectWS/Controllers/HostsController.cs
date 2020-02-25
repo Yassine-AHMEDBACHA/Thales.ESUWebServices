@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using ESU.Data;
+﻿using ESU.Data;
 using ESU.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ESU.CollectWS.Controllers
 {
@@ -46,7 +46,7 @@ namespace ESU.CollectWS.Controllers
         {
             try
             {
-                this.logger.LogInformation($"Adding host with Installation id : {host.Name}");
+                this.logger.LogDebug($"Adding host with Installation id : {host.Name}");
                 this.context.Hosts.Add(host);
                 await this.context.SaveChangesAsync();
                 this.logger.LogInformation($"host with InstallationId = {host.Name} is saved with id={host.Id}");
@@ -54,13 +54,6 @@ namespace ESU.CollectWS.Controllers
             }
             catch (Exception ex)
             {
-                this.logger.LogError($"An error has occured while saving host with installationId {host.Name}", ex.InnerException ?? ex);
-                var errorMessage = ex.InnerException?.Message ?? ex.Message;
-                if (errorMessage.Contains("unique"))
-                {
-                    return Conflict(ex.InnerException.Message);
-                }
-
                 return Problem(ex.Message);
             }
         }

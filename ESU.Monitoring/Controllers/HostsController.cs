@@ -1,5 +1,6 @@
 ﻿using ESU.Data;
 using ESU.Data.Models;
+using ESU.Monitoring.Controllers.Filtering;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -22,17 +23,51 @@ namespace ESU.Monitoring.Controllers
             this.context = context;
         }
 
-        [HttpGet("{name}")]
-        public async Task<ActionResult<List<Host>>> GetHost(string name)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Host>> GetById(int id)
         {
-            this.logger.LogInformation("Loading hosts with name " + name);
-            var query = this.context.Hosts
+            var host = await this.context.Hosts
                 .Include(x => x.ProcessingStatus)
                 .Include(x => x.Licenses)
                 .ThenInclude(license => license.Confirmations)
-                .Where(x => x.Name.StartsWith(name));
+                .FirstOrDefaultAsync(x => x.Id == id);
 
-            var hosts = await query.ToListAsync();
+            if (host == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(host);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<Host>>> GetHost([FromQuery] HostFilteringParameters filter)
+        {
+            this.logger.LogInformation($"Loading hosts where {filter?.ToString()}");
+            var query = this.context.Hosts.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filter.Name))
+            {
+                query = query.Where(x => x.Name.StartsWith(filter.Name));
+            }
+
+            if (!string.IsNullOrEmpty(filter.Site))
+            {
+                query = query.Where(x => x.Site.StartsWith(filter.Site));
+            }
+
+            if (!string.IsNullOrEmpty(filter.Network))
+            {
+                query = query.Where(x => x.Network.StartsWith(filter.Network));
+            }
+
+            var hosts = await query
+                .Skip(filter.Offset)
+                .Take(filter.Limit)
+                .Include(x => x.ProcessingStatus)
+                .Include(x => x.Licenses)
+                .ThenInclude(license => license.Confirmations)
+                .ToListAsync();
 
             if (hosts.Count == 0)
             {

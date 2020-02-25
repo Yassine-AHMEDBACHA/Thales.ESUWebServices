@@ -39,9 +39,17 @@ namespace ESU.CollectWS.Controllers
         [HttpPost]
         public async Task<ActionResult> Post(ProcessingStatus processingStatus)
         {
+            CleanStatusMessage(processingStatus);
             this.context.ProcessingStatus.Add(processingStatus);
             await this.context.SaveChangesAsync();
             return CreatedAtAction(nameof(this.GetProcessingStatusById), new { processingStatus.Id }, processingStatus);
+        }
+
+        private static void CleanStatusMessage(ProcessingStatus processingStatus)
+        {
+            processingStatus.Message = processingStatus.Message?.Replace("Lisence", "License")
+                .Replace("          ", "")
+                .Replace("\r\n", "");
         }
     }
 }

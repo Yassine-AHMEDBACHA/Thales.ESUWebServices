@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using ESU.Monitoring.Core;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ESU.Monitoring.Controllers
 {
@@ -10,15 +8,17 @@ namespace ESU.Monitoring.Controllers
     [Route("api/[controller]")]
     public class ServiceHealthyController : ControllerBase
     {
-        public ServiceHealthyController()
-        {
+        private readonly ServiceHealthyChecker serviceHealthyChecker;
 
+        public ServiceHealthyController(ServiceHealthyChecker serviceHealthyChecker)
+        {
+            this.serviceHealthyChecker = serviceHealthyChecker;
         }
 
         [HttpGet]
-        public void Get()
+        public ActionResult<IEnumerable<ServiceStatus>> Get()
         {
-            
+            return Ok(this.serviceHealthyChecker.CheckServiceHealthy());
         }
     }
 }

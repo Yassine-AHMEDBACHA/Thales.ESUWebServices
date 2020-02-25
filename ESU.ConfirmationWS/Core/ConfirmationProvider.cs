@@ -36,13 +36,13 @@ namespace ESU.ConfirmationWS.Core
             };
 
             var isSucces = this.TryCallWebService(installationId, extendedProductId, out var confirmationKey);
-            confirmation.Content = confirmationKey.Substring(100);
+            confirmation.Content = confirmationKey.Length <= 100 ? confirmationKey : confirmationKey.Substring(100);
             confirmation.ResponseDate = DateTime.Now;
             if (isSucces)
             {
                 this.logger.LogInformation("Requesting confirmation for installationId Succes");
                 confirmation.Status = Status.Success;
-                
+
             }
             else
             {

@@ -11,7 +11,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api/hosts/DZ",
+      "launchUrl": "api/hostStatus?name=dz",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
