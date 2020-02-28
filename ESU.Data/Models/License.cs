@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 
 namespace ESU.Data.Models
 {
@@ -7,6 +8,10 @@ namespace ESU.Data.Models
         public string InstallationId { get; set; }
 
         public string ExtendedProductId { get; set; }
+
+        public DateTime InstallationDate { get; set; }
+
+        public string ProductKey { get; set; }
 
         public int HostId { get; set; }
 

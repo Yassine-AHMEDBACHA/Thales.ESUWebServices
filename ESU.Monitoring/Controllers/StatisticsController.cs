@@ -1,11 +1,36 @@
-﻿using System;
+﻿using ESU.Data;
+using ESU.Monitoring.Core;
+using ESU.Monitoring.Models;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ESU.Monitoring.Controllers
 {
-    public class StatisticsController
+    [ApiController]
+    [Route("api/[controller]")]
+    public class StatisticsController : ControllerBase
     {
+        private readonly StatisticsProvider statisticsProvider;
+        private readonly ESUContext context;
+
+        public StatisticsController(StatisticsProvider statisticsProvider, ESUContext context)
+        {
+            this.statisticsProvider = statisticsProvider;
+            this.context = context;
+        }
+        [HttpGet]
+        public ActionResult<object> GetAllts(string histoDeepth)
+        {
+            return context.Hosts.Count();
+        }
+
+
+        //[HttpGet("{histoDeepth}")]
+        //public ActionResult<IDictionary<DateTime, Stat>> GetAllHosts(int histoDeepth)
+        //{
+        //    return Ok(statisticsProvider.GetStats(histoDeepth));
+        //}
     }
 }

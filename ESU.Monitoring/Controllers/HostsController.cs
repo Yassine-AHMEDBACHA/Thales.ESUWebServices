@@ -43,6 +43,7 @@ namespace ESU.Monitoring.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Host>>> GetHost([FromQuery] HostFilteringParameters filter)
         {
+            
             this.logger.LogInformation($"Loading hosts where {filter?.ToString()}");
             var query = this.context.Hosts.AsQueryable();
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace ESU.Data.Models
 {
@@ -19,6 +20,8 @@ namespace ESU.Data.Models
         public string OsVersion { get; set; }
 
         public bool Is64BitOperatingSystem { get; set; }
+
+        public DateTime SubscriptionDate { get; set; }
 
         public List<License> Licenses { get; set; }
 

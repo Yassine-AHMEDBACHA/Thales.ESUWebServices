@@ -40,20 +40,31 @@ namespace ESU.CollectWS.Controllers
 
             return NotFound();
         }
-
+                
         [HttpPost]
         public async Task<ActionResult> PostHost(Host host)
         {
+            this.logger.LogDebug($"Subscribing host [{host.Name}]...");
+            if(string.IsNullOrEmpty(host.Name))
+            {
+                return BadRequest("Invalid Host name");
+            }
+
             try
             {
-                this.logger.LogDebug($"Adding host with Installation id : {host.Name}");
+                if(host.SubscriptionDate == default)
+                {
+                    host.SubscriptionDate = DateTime.Now;
+                }
+
                 this.context.Hosts.Add(host);
                 await this.context.SaveChangesAsync();
-                this.logger.LogInformation($"host with InstallationId = {host.Name} is saved with id={host.Id}");
+                this.logger.LogInformation($"Host [{host.Name}] subscribed with Id=[{host.Id}]");
                 return CreatedAtAction(nameof(this.GetById), new { host.Id }, host);
             }
             catch (Exception ex)
             {
+                this.logger.LogError(ex, string.Empty);
                 return Problem(ex.Message);
             }
         }
