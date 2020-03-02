@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace ESU.Data
 {
-    public class HostProvider
+    public class HostService
     {
         private readonly Data.ESUContext context;
 
-        public HostProvider(Data.ESUContext context)
+        public HostService(Data.ESUContext context)
         {
             this.context = context;
         }

@@ -35,7 +35,8 @@ namespace ESU.Monitoring
             services.AddHealthChecks();
             services.AddControllers();
             services.AddScoped<StatisticsProvider>();
-            services.AddScoped<HostProvider>();
+            services.AddScoped<HostService>();
+            services.AddScoped<HostReportProvider>();
             services.AddSingleton<HostAnalyzer>();
             services.AddSingleton<ServiceHealthyChecker>();
             services.AddDbContext<ESUContext>();

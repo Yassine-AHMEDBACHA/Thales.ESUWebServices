@@ -52,7 +52,7 @@ namespace ESU.CollectWS.Controllers
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, string.em);
+                this.logger.LogError(ex, string.Empty);
             }
         }
 
@@ -61,6 +61,11 @@ namespace ESU.CollectWS.Controllers
             processingStatus.Message = processingStatus.Message?.Replace("Lisence", "License")
                 .Replace("          ", "")
                 .Replace("\r\n", "");
+
+            if (processingStatus.Message == "License activated.")
+            {
+                processingStatus.Status = Status.Success;
+            }
         }
     }
 }

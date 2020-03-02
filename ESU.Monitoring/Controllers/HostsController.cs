@@ -23,6 +23,13 @@ namespace ESU.Monitoring.Controllers
             this.context = context;
         }
 
+        [HttpGet("count")]
+        public async Task<int> count()
+        {
+            var count = await this.context.Hosts.CountAsync();
+            return count;
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Host>> GetById(int id)
         {
@@ -43,7 +50,7 @@ namespace ESU.Monitoring.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Host>>> GetHost([FromQuery] HostFilteringParameters filter)
         {
-            
+
             this.logger.LogInformation($"Loading hosts where {filter?.ToString()}");
             var query = this.context.Hosts.AsQueryable();
 

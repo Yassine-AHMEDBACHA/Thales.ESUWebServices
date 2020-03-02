@@ -10,9 +10,9 @@ namespace ESU.Monitoring.Core
 {
     public class StatisticsProvider
     {
-        private readonly HostProvider hostProvider;
+        private readonly HostService hostProvider;
 
-        public StatisticsProvider(HostProvider hostProvider)
+        public StatisticsProvider(HostService hostProvider)
         {
             this.hostProvider = hostProvider;
         }

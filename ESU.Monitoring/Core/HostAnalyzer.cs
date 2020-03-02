@@ -25,7 +25,7 @@ namespace ESU.Monitoring.Core
                         }
                         else
                         {
-                            yield return "Wainting Confirmation key installation";
+                            yield return "Waiting Confirmation key installation";
                         }
                     }
                     else
