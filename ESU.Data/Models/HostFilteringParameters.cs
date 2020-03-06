@@ -1,26 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ESU.Data.Models
 {
-    public class HostFiltringParameters
+    public class HostFilteringParameters
     {
-        public HostFiltringParameters()
+        public HostFilteringParameters()
             : this(DateTime.MinValue)
         {
         }
 
-        public HostFiltringParameters(DateTime minDate)
+        public HostFilteringParameters(DateTime minDate)
         {
-            this.MinDate = minDate;
+            this.MinDate = this.MaxDate = minDate;
         }
 
         public DateTime MinDate { get; set; }
 
+        public DateTime MaxDate { get; set; }
+
         public string Name { get; set; }
 
         public string Mail { get; set; }
+
+        public string Site { get; set; }
+
+        public string Network { get; set; }
 
         public int Limit { get; set; }
 

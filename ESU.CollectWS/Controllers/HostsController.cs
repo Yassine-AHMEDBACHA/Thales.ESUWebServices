@@ -44,7 +44,7 @@ namespace ESU.CollectWS.Controllers
         [HttpPost]
         public async Task<ActionResult> PostHost(Host host)
         {
-            this.logger.LogDebug($"Subscribing host [{host.Name}]...");
+            this.logger.LogInformation($"Subscribing host [{host.Name}]...");
             if(string.IsNullOrEmpty(host.Name))
             {
                 return BadRequest("Invalid Host name");

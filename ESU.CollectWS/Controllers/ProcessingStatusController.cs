@@ -48,11 +48,13 @@ namespace ESU.CollectWS.Controllers
                 CleanStatusMessage(processingStatus);
                 this.context.ProcessingStatus.Add(processingStatus);
                 await this.context.SaveChangesAsync();
+                this.logger.LogInformation($"Processing status saved for host [{ processingStatus.HostId} ]");
                 return CreatedAtAction(nameof(this.GetProcessingStatusById), new { processingStatus.Id }, processingStatus);
             }
             catch (Exception ex)
             {
                 this.logger.LogError(ex, string.Empty);
+                return Problem(ex.Message);
             }
         }
 
@@ -65,6 +67,10 @@ namespace ESU.CollectWS.Controllers
             if (processingStatus.Message == "License activated.")
             {
                 processingStatus.Status = Status.Success;
+            }
+            else
+            {
+                processingStatus.Status = Status.Failed;
             }
         }
     }

@@ -22,17 +22,17 @@ namespace ESU.Data
 
         public DbSet<ProcessingStatus> ProcessingStatus { get; set; }
 
-        protected override  void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(this.configuration.GetConnectionString("ESU"));
+            optionsBuilder.UseSqlServer(this.configuration.GetConnectionString("ESU"), sqlOptions => sqlOptions.CommandTimeout(300));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        
+
         {
             modelBuilder.Entity<Host>()
                 .ToTable("Hosts");
-                
+
             modelBuilder.Entity<Confirmation>().ToTable("Confirmations")
                 .HasOne(x => x.License);
 

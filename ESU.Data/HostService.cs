@@ -16,18 +16,18 @@ namespace ESU.Data
             this.context = context;
         }
 
-        public async Task<List<Host>> LoadHostAsync(HostFiltringParameters filtringParameters = null)
+        public async Task<List<Host>> LoadHostAsync(HostFilteringParameters filtringParameters = null)
         {
             var query = this.GetHostQuery(filtringParameters);
             return await query.ToListAsync();
         }
 
-        public List<Host> LoadHost(HostFiltringParameters filtringParameters = null)
+        public List<Host> LoadHost(HostFilteringParameters filtringParameters = null)
         {
             return this.LoadHostAsync(filtringParameters).Result;
         }
 
-        private IQueryable<Host> GetHostQuery(HostFiltringParameters filtringParameters = null)
+        private IQueryable<Host> GetHostQuery(HostFilteringParameters filtringParameters = null)
         {
             var query = this.context.Hosts.AsQueryable();
             if (filtringParameters != null)
@@ -35,6 +35,10 @@ namespace ESU.Data
                 if (filtringParameters.MinDate > DateTime.MinValue)
                 {
                     query = query.Where(x => x.SubscriptionDate >= filtringParameters.MinDate);
+                    if (filtringParameters.MaxDate > filtringParameters.MinDate)
+                    {
+                        query = query.Where(x => x.SubscriptionDate <= filtringParameters.MaxDate);
+                    }
                 }
 
                 if (!string.IsNullOrEmpty(filtringParameters.Name))
@@ -46,8 +50,18 @@ namespace ESU.Data
                 {
                     query = query.Where(x => x.Mail.StartsWith(filtringParameters.Mail));
                 }
-                
-                if(filtringParameters.Offset > 0)
+
+                if (!string.IsNullOrEmpty(filtringParameters.Site))
+                {
+                    query = query.Where(x => x.Site.StartsWith(filtringParameters.Site));
+                }
+
+                if (!string.IsNullOrEmpty(filtringParameters.Network))
+                {
+                    query = query.Where(x => x.Network.StartsWith(filtringParameters.Network));
+                }
+
+                if (filtringParameters.Offset > 0)
                 {
                     query = query.Skip(filtringParameters.Offset);
                 }
@@ -62,6 +76,26 @@ namespace ESU.Data
                 .Include(x => x.ProcessingStatus)
                 .Include(x => x.Licenses)
                 .ThenInclude(l => l.Confirmations);
+        }
+
+        public int Count()
+        {
+            return this.context.Hosts.Count();
+        }
+
+        public Task<int> CountAsync()
+        {
+            return this.context.Hosts.CountAsync();
+        }
+
+        public Host Find(int id)
+        {
+            return this.context.Hosts.Find(id);
+        }
+
+        public ValueTask<Host> FindAsync(int id)
+        {
+            return this.context.Hosts.FindAsync(id);
         }
     }
 }

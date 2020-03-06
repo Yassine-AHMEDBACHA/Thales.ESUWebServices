@@ -23,7 +23,7 @@ namespace ESU.Monitoring.Core
             var stats = Enumerable.Range(1, histoDeepth)
                 .ToDictionary(d => minDate.AddDays(d), d => new Stat());
 
-            var filter = new HostFiltringParameters(minDate);
+            var filter = new HostFilteringParameters(minDate);
 
             var hosts = this.hostProvider.LoadHost(filter);
 
@@ -42,7 +42,10 @@ namespace ESU.Monitoring.Core
                 }
 
                 var succesStatus = host.ProcessingStatus.FirstOrDefault(x => x.Message.Contains("activated"));
-                stats.GetOrAddValue(succesStatus.StatusDate.Date).ActivatedHosts++;
+                if (succesStatus != null)
+                {
+                    stats.GetOrAddValue(succesStatus.StatusDate.Date).ActivatedHosts++;
+                }
             }
 
             return stats;

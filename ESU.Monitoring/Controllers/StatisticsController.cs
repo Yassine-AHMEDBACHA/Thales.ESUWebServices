@@ -20,17 +20,17 @@ namespace ESU.Monitoring.Controllers
             this.statisticsProvider = statisticsProvider;
             this.context = context;
         }
-        [HttpGet]
-        public ActionResult<object> GetAllts(string histoDeepth)
+
+        [HttpGet("{histoDeepth}")]
+        public ActionResult<IDictionary<DateTime, Stat>> GetAllHosts(int histoDeepth)
         {
-            return context.Hosts.Count();
+            return Ok(statisticsProvider.GetStats(histoDeepth));
         }
 
-
-        //[HttpGet("{histoDeepth}")]
-        //public ActionResult<IDictionary<DateTime, Stat>> GetAllHosts(int histoDeepth)
-        //{
-        //    return Ok(statisticsProvider.GetStats(histoDeepth));
-        //}
+        [HttpGet()]
+        public ActionResult<IDictionary<DateTime, Stat>> GetAllHosts()
+        {
+            return Ok(statisticsProvider.GetStats(0));
+        }
     }
 }

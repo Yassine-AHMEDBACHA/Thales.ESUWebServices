@@ -1,10 +1,6 @@
 ﻿using ESU.Data.Models;
 using ESU.Monitoring.Core;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ESU.Monitoring.Controllers
 {
@@ -20,10 +16,10 @@ namespace ESU.Monitoring.Controllers
         }
 
         [HttpGet]
-        public FileContentResult Get([FromQuery]HostFiltringParameters hostFiltringParameters)
+        public FileContentResult Get([FromQuery]HostFilteringParameters hostFiltringParameters)
         {
-            var content = this.hostReportProvider.GetReportAsMemoryStream(hostFiltringParameters);
-            return File(content, "application/octet-stream");
+                var content = this.hostReportProvider.GetReportAsMemoryStream(hostFiltringParameters);
+                return File(content, "application/octet-stream", "Hosts.csv");
         }
     }
 }

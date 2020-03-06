@@ -6,11 +6,11 @@ namespace ESU.Monitoring.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class HealthyController : ControllerBase
+    public class ServicesController : ControllerBase
     {
         private readonly ServiceHealthyChecker serviceHealthyChecker;
 
-        public HealthyController(ServiceHealthyChecker serviceHealthyChecker)
+        public ServicesController(ServiceHealthyChecker serviceHealthyChecker)
         {
             this.serviceHealthyChecker = serviceHealthyChecker;
         }

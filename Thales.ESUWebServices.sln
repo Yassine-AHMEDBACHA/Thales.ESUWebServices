@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESU.CollectWS", "ESU.Collec
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESU.Data", "ESU.Data\ESU.Data.csproj", "{98860A53-740A-4FFA-9544-B102E00CE07B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ESU.Monitoring", "ESU.Monitoring\ESU.Monitoring.csproj", "{0523CE6C-A65B-4E93-AA73-FC1D36C9DCCB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESU.MonitoringWS", "ESU.Monitoring\ESU.MonitoringWS.csproj", "{0523CE6C-A65B-4E93-AA73-FC1D36C9DCCB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -46,7 +46,7 @@ namespace ESU.CollectWS.Controllers
         [HttpPost]
         public async Task<ActionResult> Post(License license)
         {
-            this.logger.LogDebug("Adding license : " + license?.InstallationId);
+            this.logger.LogInformation("Adding license : " + license?.InstallationId);
             try
             {
                 if (license.InstallationDate == default)
@@ -56,11 +56,12 @@ namespace ESU.CollectWS.Controllers
 
                 if (string.IsNullOrEmpty(license.ProductKey))
                 {
-                    license.ProductKey = "RJQBC-33HH4-TB6M6-X6F26-7P7W4";
+                    license.ProductKey = "DefaultKey";
                 }
 
                 this.context.Licenses.Add(license);
                 await this.context.SaveChangesAsync();
+                this.logger.LogInformation($"License with installation id [{license.InstallationId}] subscribed with Id=[{license.Id}]");
                 return CreatedAtAction(nameof(this.GetByInstallationId), new { license.InstallationId }, license);
             }
             catch (Exception ex)

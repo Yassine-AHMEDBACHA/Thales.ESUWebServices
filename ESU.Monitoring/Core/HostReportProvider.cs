@@ -1,12 +1,8 @@
 ﻿using ESU.Data;
 using ESU.Data.Models;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ESU.Monitoring.Core
 {
@@ -21,25 +17,34 @@ namespace ESU.Monitoring.Core
             this.logger = logger;
         }
 
-        public byte[] GetReportAsMemoryStream(HostFiltringParameters hostFiltringParameters)
+        public byte[] GetReportAsMemoryStream(HostFilteringParameters hostFiltringParameters)
         {
             var stringBuilder = new StringBuilder();
             var hosts = this.hostService.LoadHost(hostFiltringParameters);
-            stringBuilder.AppendLine($"Name;Mail;Site;InstallationId,ProductId,ConfirmationKey");
+            stringBuilder.AppendLine($"Id;Name;Mail;Site;SubscriptionDate;InstallationId;ProductId;InstallationDate;ConfirmationKey;ConfirmationDate;Status;StatusDate");
             foreach (var host in hosts)
             {
-                var prefix = $"{ host.Name};{ host.Mail};{ host.Site}";
+                var prefix = $"{host.Id};{ host.Name};{ host.Mail};{ host.Site};{host.SubscriptionDate.ToString("dd/MM/yyyy HH:mm:ss")}";
                 if (host.Licenses.Count > 0)
                 {
                     foreach (var license in host.Licenses)
                     {
-                        prefix = $"{prefix};{ license.InstallationId},{ license.ExtendedProductId}";
+                        prefix = $"{prefix};{ license.InstallationId};{ license.ExtendedProductId};{license.InstallationDate.ToString("dd/MM/yyyy HH:mm:ss")}";
                         var confirmations = license.Confirmations.Where(x => x.Status == Status.Success);
                         if (confirmations.Any())
                         {
                             foreach (var confirmation in confirmations)
                             {
-                                stringBuilder.AppendLine($"{prefix};{confirmation.Content}");
+                                prefix = $"{prefix};{confirmation.Content};{confirmation.ResponseDate}";
+                                var successStatus = host.ProcessingStatus.FirstOrDefault(x => x.Status == Status.Success);
+                                if (successStatus != null)
+                                {
+                                    stringBuilder.AppendLine($"{prefix};{successStatus.Message};{successStatus.StatusDate.ToString("dd/MM/yyyy HH:mm:ss")}");
+                                }
+                                else
+                                {
+                                    stringBuilder.AppendLine(prefix);
+                                }
                             }
                         }
                         else
@@ -50,7 +55,15 @@ namespace ESU.Monitoring.Core
                 }
                 else
                 {
-                    stringBuilder.AppendLine(prefix);
+                    var status = host.ProcessingStatus.LastOrDefault(x => !x.Message.Contains("activated"));
+                    if (status != null)
+                    {
+                        stringBuilder.AppendLine($"{prefix};;;;;;{status.Message};{status.StatusDate.ToString("dd/MM/yyyy HH:mm:ss")}");
+                    }
+                    else
+                    {
+                        stringBuilder.AppendLine(prefix);
+                    }
                 }
             }
 

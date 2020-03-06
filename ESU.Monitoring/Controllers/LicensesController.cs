@@ -2,19 +2,21 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ESU.Monitoring.Controllers
+namespace ESU.MonitoringWS.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ConfirmationsController : ControllerBase
+    public class LicensesController : ControllerBase
     {
         private readonly ESUContext context;
-        private readonly ILogger<ConfirmationsController> logger;
+        private readonly ILogger<LicensesController> logger;
 
-        public ConfirmationsController(ESUContext context, ILogger<ConfirmationsController> logger)
+        public LicensesController(ESUContext context, ILogger<LicensesController> logger)
         {
             this.context = context;
             this.logger = logger;
@@ -23,9 +25,8 @@ namespace ESU.Monitoring.Controllers
         [HttpGet("count")]
         public async Task<int> GetConfirmationKeyCount()
         {
-            var count = await this.context.Confirmations
-                .Where(x => x.Status == Data.Models.Status.Success)
-                .CountAsync();
+            var count = await this.context.Licenses.CountAsync();
+
 
             return count;
         }
