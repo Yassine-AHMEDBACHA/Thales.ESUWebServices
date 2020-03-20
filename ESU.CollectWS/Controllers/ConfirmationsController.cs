@@ -40,7 +40,7 @@ namespace ESU.CollectWS.Controllers
                 this.logger.LogInformation($"ConfirmationKey Not found for installation id : [{installationId}]");
                 return NotFound();
             }
-
+            
             this.logger.LogInformation($"ConfirmationKey found for installation id : [{installationId}] : [{confirmation.Content}]");
             return confirmation;
         }

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace ESU.Monitoring.Helpers
+namespace ESU.MonitoringWS.Extensions
 {
-    public static class IIDictionaryExtensions
+    internal static class IIDictionaryExtensions
     {
-        public static V GetOrAddValue<T,V>(this Dictionary<T, V> dictionary, T key) 
+        public static V GetOrAddValue<T,V>(this IDictionary<T, V> dictionary, T key) 
             where V : new()
         {
             if (!dictionary.TryGetValue(key, out var value))

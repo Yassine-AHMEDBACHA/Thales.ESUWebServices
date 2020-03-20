@@ -23,8 +23,11 @@ namespace ESU.Data.Models
 
         public DateTime SubscriptionDate { get; set; }
 
+        public ProductType ProductType { get; set; }
+
         public List<License> Licenses { get; set; }
 
         public ICollection<ProcessingStatus> ProcessingStatus { get; set; }
+
     }
 }

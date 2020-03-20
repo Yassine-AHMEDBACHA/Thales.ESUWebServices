@@ -63,15 +63,6 @@ namespace ESU.CollectWS.Controllers
             processingStatus.Message = processingStatus.Message?.Replace("Lisence", "License")
                 .Replace("          ", "")
                 .Replace("\r\n", "");
-
-            if (processingStatus.Message == "License activated.")
-            {
-                processingStatus.Status = Status.Success;
-            }
-            else
-            {
-                processingStatus.Status = Status.Failed;
-            }
         }
     }
 }

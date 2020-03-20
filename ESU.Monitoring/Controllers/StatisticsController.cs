@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ESU.Monitoring.Controllers
 {
@@ -31,6 +32,13 @@ namespace ESU.Monitoring.Controllers
         public ActionResult<IDictionary<DateTime, Stat>> GetAllHosts()
         {
             return Ok(statisticsProvider.GetStats(0));
+        }
+
+        [HttpGet("all")]
+        public async Task<ActionResult<Stat>> GetAll()
+        {
+            var stat = await this.statisticsProvider.All();
+            return Ok(stat);
         }
     }
 }

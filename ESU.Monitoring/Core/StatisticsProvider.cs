@@ -1,31 +1,36 @@
 ﻿using ESU.Data;
 using ESU.Data.Models;
-using ESU.Monitoring.Helpers;
 using ESU.Monitoring.Models;
+using ESU.MonitoringWS.Extensions;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ESU.Monitoring.Core
 {
     public class StatisticsProvider
     {
-        private readonly HostService hostProvider;
+        private readonly HostService hostService;
+        private readonly ESUContext context;
 
-        public StatisticsProvider(HostService hostProvider)
+        public StatisticsProvider(HostService hostService, ESUContext context)
         {
-            this.hostProvider = hostProvider;
+            this.hostService = hostService;
+            this.context = context;
         }
 
         public IDictionary<DateTime, Stat> GetStats(int histoDeepth)
         {
             var minDate = DateTime.Today.AddDays(-histoDeepth);
-            var stats = Enumerable.Range(1, histoDeepth)
-                .ToDictionary(d => minDate.AddDays(d), d => new Stat());
+
+            var stats = Enumerable.Range(0, histoDeepth + 1)
+                .ToSortedDictionary(d => minDate.AddDays(d), d => new Stat());
 
             var filter = new HostFilteringParameters(minDate);
 
-            var hosts = this.hostProvider.LoadHost(filter);
+            var hosts = this.hostService.LoadHost(filter);
 
             foreach (var host in hosts)
             {
@@ -49,6 +54,16 @@ namespace ESU.Monitoring.Core
             }
 
             return stats;
+        }
+
+        public async Task<Stat> All()
+        {
+            var stat = new Stat();
+            stat.SubscribedHosts = await this.hostService.CountAsync();
+            stat.CollectedHosts = await this.context.Licenses.CountAsync();
+            stat.AvailableConfirmations = await this.context.Confirmations.Where(x => x.Status == Status.Success).CountAsync();
+            stat.ActivatedHosts =await this.context.Hosts.Where(x => x.ProcessingStatus.Any(x => x.Status == Status.Success)).CountAsync();
+            return stat;
         }
     }
 }

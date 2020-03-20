@@ -28,7 +28,6 @@ namespace ESU.Data
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-
         {
             modelBuilder.Entity<Host>()
                 .ToTable("Hosts");

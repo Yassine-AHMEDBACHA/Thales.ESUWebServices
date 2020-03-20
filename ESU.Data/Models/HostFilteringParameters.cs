@@ -12,6 +12,7 @@ namespace ESU.Data.Models
         public HostFilteringParameters(DateTime minDate)
         {
             this.MinDate = this.MaxDate = minDate;
+            
         }
 
         public DateTime MinDate { get; set; }
@@ -29,5 +30,13 @@ namespace ESU.Data.Models
         public int Limit { get; set; }
 
         public int Offset { get; set; }
+
+        public bool WithStatus { get; set; } = true;
+
+        public bool WithLicenses { get; set; } = true;
+
+        public bool WithConfirmations { get; set; } = true;
+
+
     }
 }

@@ -30,52 +30,72 @@ namespace ESU.Data
         private IQueryable<Host> GetHostQuery(HostFilteringParameters filtringParameters = null)
         {
             var query = this.context.Hosts.AsQueryable();
-            if (filtringParameters != null)
+            if (filtringParameters == null)
             {
-                if (filtringParameters.MinDate > DateTime.MinValue)
-                {
-                    query = query.Where(x => x.SubscriptionDate >= filtringParameters.MinDate);
-                    if (filtringParameters.MaxDate > filtringParameters.MinDate)
-                    {
-                        query = query.Where(x => x.SubscriptionDate <= filtringParameters.MaxDate);
-                    }
-                }
+                return query
+               .Include(x => x.ProcessingStatus)
+               .Include(x => x.Licenses)
+               .ThenInclude(l => l.Confirmations);
+            }
 
-                if (!string.IsNullOrEmpty(filtringParameters.Name))
+            if (filtringParameters.MinDate > DateTime.MinValue)
+            {
+                query = query.Where(x => x.SubscriptionDate >= filtringParameters.MinDate);
+                if (filtringParameters.MaxDate >= filtringParameters.MinDate)
                 {
-                    query = query.Where(x => x.Name.StartsWith(filtringParameters.Name));
-                }
-
-                if (!string.IsNullOrEmpty(filtringParameters.Mail))
-                {
-                    query = query.Where(x => x.Mail.StartsWith(filtringParameters.Mail));
-                }
-
-                if (!string.IsNullOrEmpty(filtringParameters.Site))
-                {
-                    query = query.Where(x => x.Site.StartsWith(filtringParameters.Site));
-                }
-
-                if (!string.IsNullOrEmpty(filtringParameters.Network))
-                {
-                    query = query.Where(x => x.Network.StartsWith(filtringParameters.Network));
-                }
-
-                if (filtringParameters.Offset > 0)
-                {
-                    query = query.Skip(filtringParameters.Offset);
-                }
-
-                if (filtringParameters.Limit > 0)
-                {
-                    query = query.Take(filtringParameters.Limit);
+                    query = query.Where(x => x.SubscriptionDate <= filtringParameters.MaxDate);
                 }
             }
 
-            return query
-                .Include(x => x.ProcessingStatus)
-                .Include(x => x.Licenses)
-                .ThenInclude(l => l.Confirmations);
+            if (!string.IsNullOrEmpty(filtringParameters.Name))
+            {
+                query = query.Where(x => x.Name.StartsWith(filtringParameters.Name));
+            }
+
+            if (!string.IsNullOrEmpty(filtringParameters.Mail))
+            {
+                query = query.Where(x => x.Mail.StartsWith(filtringParameters.Mail));
+            }
+
+            if (!string.IsNullOrEmpty(filtringParameters.Site))
+            {
+                query = query.Where(x => x.Site.StartsWith(filtringParameters.Site));
+            }
+
+            if (!string.IsNullOrEmpty(filtringParameters.Network))
+            {
+                query = query.Where(x => x.Network.StartsWith(filtringParameters.Network));
+            }
+
+            if (filtringParameters.Offset > 0)
+            {
+                query = query.Skip(filtringParameters.Offset);
+            }
+
+            if (filtringParameters.Limit > 0)
+            {
+                query = query.Take(filtringParameters.Limit);
+            }
+
+            if (filtringParameters.WithStatus)
+            {
+                query = query.Include(x => x.ProcessingStatus);
+            }
+
+            if (filtringParameters.WithLicenses)
+            {
+                var temp = query.Include(x => x.Licenses);
+                if (filtringParameters.WithConfirmations)
+                {
+                    query = temp.ThenInclude(l => l.Confirmations);
+                }
+                else
+                {
+                    query = temp;
+                }
+            }
+
+            return query;
         }
 
         public int Count()
