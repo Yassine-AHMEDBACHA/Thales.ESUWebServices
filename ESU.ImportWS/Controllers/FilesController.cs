@@ -18,8 +18,14 @@ namespace ESU.ImportWS.Controllers
             this.fileAnalyzer = fileAnalyzer;
         }
 
+        [HttpGet]
+        public ActionResult<string> Get()
+        {
+            return Ok("Good");
+        }
+
         [HttpPost]
-        public ActionResult<string> Post(FileContent fileContent)
+        public ActionResult Post(FileContent fileContent)
         {
             return Ok(this.fileAnalyzer.Analyzer(fileContent));
         }

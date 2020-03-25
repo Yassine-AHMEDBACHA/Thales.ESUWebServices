@@ -8,8 +8,10 @@ namespace ESU.ImportWS.Models
 {
     public class FileContent
     {
-        public Stream Content { get; set; }
+        public string Content { get; set; }
 
         public IEnumerable<string> Rows { get; set; }
+
+        public string Owner { get; set; }
     }
 }
