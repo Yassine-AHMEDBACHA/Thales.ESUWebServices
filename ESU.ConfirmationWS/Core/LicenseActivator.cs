@@ -66,10 +66,17 @@ namespace ESU.ConfirmationWS.Core
             while (!this.licenses.IsEmpty)
             {
                 this.licenses.TryDequeue(out var license);
-                var confirmation = this.confirmationProvider.GetConfirmation(license.InstallationId, license.ExtendedProductId);
-                confirmation.LicenseId = license.Id;
-                this.context.Confirmations.Add(confirmation);
-                this.context.SaveChanges();
+                try
+                {
+                    var confirmation = this.confirmationProvider.GetConfirmation(license.InstallationId, license.ExtendedProductId);
+                    confirmation.LicenseId = license.Id;
+                    this.context.Confirmations.Add(confirmation);
+                    this.context.SaveChanges();
+                }
+                catch (Exception exception)
+                {
+                    this.logger.LogError(exception, string.Empty);
+                }
             }
             this.logger.LogInformation("Done.");
             this.timer.Start();

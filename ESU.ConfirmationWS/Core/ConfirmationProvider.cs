@@ -29,20 +29,25 @@ namespace ESU.ConfirmationWS.Core
 
         public Confirmation GetConfirmation(string installationId, string extendedProductId)
         {
-            this.logger.LogInformation("Requesting confirmation for installationId" + installationId);
+            this.logger.LogInformation("Requesting confirmation for installationId: " + installationId);
             var confirmation = new Confirmation
             {
                 RequestDate = DateTime.Now
             };
 
             var isSucces = this.TryCallWebService(installationId, extendedProductId, out var confirmationKey);
-            confirmation.Content = confirmationKey.Length <= 100 ? confirmationKey : confirmationKey.Substring(100);
+
+            confirmation.Content = confirmationKey.Length <= 100 ? confirmationKey : confirmationKey.Substring(0, 100);
+
             confirmation.ResponseDate = DateTime.Now;
             if (isSucces)
             {
-                this.logger.LogInformation("Requesting confirmation for installationId Succes");
+                if (confirmationKey.Length >= 100)
+                {
+                    this.logger.LogInformation($"confirmation key is too long and will be trunced : [{confirmationKey}]");
+                }
+                this.logger.LogInformation("Requesting confirmation for installationId Succes.");
                 confirmation.Status = Status.Success;
-
             }
             else
             {
