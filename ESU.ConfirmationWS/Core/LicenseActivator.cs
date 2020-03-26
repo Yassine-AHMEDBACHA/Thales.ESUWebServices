@@ -92,6 +92,7 @@ namespace ESU.ConfirmationWS.Core
                 catch (Exception exception)
                 {
                     this.logger.LogError(exception, string.Empty);
+                    this.LastKey = exception.Message;
                 }
             }
             this.logger.LogInformation("Done.");
