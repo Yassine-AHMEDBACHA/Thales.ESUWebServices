@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api/msactivations/007434190213628201333480437886879565448546801002947944&55041-00172-632-269920-03-1033-7601.0000-0452020",
+      "launchUrl": "api/msactivations/010804036571601605534676898390406131095943073645207633&55041-00172-632-269920-03-1036-7601.0000-0822020",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
