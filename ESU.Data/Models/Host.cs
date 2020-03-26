@@ -25,6 +25,8 @@ namespace ESU.Data.Models
 
         public ProductType ProductType { get; set; }
 
+        public string Owner { get; set; }
+
         public List<License> Licenses { get; set; }
 
         public ICollection<ProcessingStatus> ProcessingStatus { get; set; }
