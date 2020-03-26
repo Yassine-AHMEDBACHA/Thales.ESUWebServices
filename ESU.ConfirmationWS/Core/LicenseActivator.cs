@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Timers;
 
 namespace ESU.ConfirmationWS.Core
@@ -22,6 +23,14 @@ namespace ESU.ConfirmationWS.Core
         private IConfiguration confirguration;
 
         public DateTime FirstRun { get; private set; }
+
+        public int LastCount { get; private set; }
+
+        public int Total { get; private set; }
+
+        public string LastKey { get; private set; }
+
+        public string Step { get; private set; }
 
         public LicenseActivator(IConfiguration confirguration, ESUContext context, IConfirmationProvider confirmationProvider, ILogger<LicenseActivator> logger)
         {
@@ -46,7 +55,7 @@ namespace ESU.ConfirmationWS.Core
                 AutoReset = false
             };
 
-            timer.Elapsed += (s, e) => this.Loop();
+            timer.Elapsed += (s, e) => Task.Factory.StartNew(this.Loop);
             return timer;
         }
 
@@ -57,21 +66,28 @@ namespace ESU.ConfirmationWS.Core
 
         private void Loop()
         {
+            this.Step = "Loading data ...";
+            this.LastCount = 0;
             this.LastRun = DateTime.Now;
             if (this.licenses.IsEmpty)
             {
                 this.LoadlicencesToActivate();
             }
             this.logger.LogInformation(this.licenses.Count + " license(s) to activate...");
+            this.Step = $"Processing... [{this.licenses.Count }]";
             while (!this.licenses.IsEmpty)
             {
                 this.licenses.TryDequeue(out var license);
                 try
                 {
+                    this.LastKey = license.InstallationId;
                     var confirmation = this.confirmationProvider.GetConfirmation(license.InstallationId, license.ExtendedProductId);
                     confirmation.LicenseId = license.Id;
                     this.context.Confirmations.Add(confirmation);
                     this.context.SaveChanges();
+                    this.LastCount++;
+                    this.Total++;
+                    this.LastKey = $"[{license.InstallationId}]->[{confirmation.Content}]";
                 }
                 catch (Exception exception)
                 {
@@ -79,6 +95,7 @@ namespace ESU.ConfirmationWS.Core
                 }
             }
             this.logger.LogInformation("Done.");
+            this.Step = "Stand by";
             this.timer.Start();
         }
 
