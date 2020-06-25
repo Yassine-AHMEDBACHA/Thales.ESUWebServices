@@ -16,7 +16,6 @@ namespace ESU.ConfirmationWS.Core
         //private const string Resource = "msactivations";
         private readonly ILogger<ConfirmationProvider> logger;
         private readonly IConfiguration configuration;
-        //private readonly RestClient restClient;
         private readonly string url;
 
         public ConfirmationProvider(IConfiguration configuration, ILogger<ConfirmationProvider> logger)
@@ -24,7 +23,6 @@ namespace ESU.ConfirmationWS.Core
             this.logger = logger;
             this.configuration = configuration;
             this.url = this.configuration.GetValue<string>("Url");
-            //this.restClient = new RestClient(url);
         }
 
         public Confirmation GetConfirmation(string installationId, string extendedProductId)
@@ -32,17 +30,16 @@ namespace ESU.ConfirmationWS.Core
             this.logger.LogInformation("Requesting confirmation for installationId" + installationId);
             var confirmation = new Confirmation
             {
-                RequestDate = DateTime.Now
+                RequestDate = DateTime.UtcNow
             };
 
             var isSucces = this.TryCallWebService(installationId, extendedProductId, out var confirmationKey);
             confirmation.Content = confirmationKey.Length <= 100 ? confirmationKey : confirmationKey.Substring(100);
-            confirmation.ResponseDate = DateTime.Now;
+            confirmation.ResponseDate = DateTime.UtcNow;
             if (isSucces)
             {
                 this.logger.LogInformation("Requesting confirmation for installationId Succes");
                 confirmation.Status = Status.Success;
-
             }
             else
             {

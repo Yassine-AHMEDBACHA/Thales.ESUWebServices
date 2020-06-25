@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ESU.Data;
 using ESU.Data.Models;
@@ -40,11 +41,27 @@ namespace ESU.CollectWS.Controllers
             return NotFound();
         }
 
+        [HttpGet("lastbyhostid/{id}")]
+        public async Task<ActionResult<ProcessingStatus>> GetLastProcessingStatusByhostId(int id)
+        {
+            var activationStatus = await this.context.ProcessingStatus
+                .OrderByDescending(x=>x.Id)
+                .FirstOrDefaultAsync(x => x.HostId == id);
+
+            if (activationStatus != null)
+            {
+                return activationStatus;
+            }
+
+            return NotFound();
+        }
+
         [HttpPost]
         public async Task<ActionResult> Post(ProcessingStatus processingStatus)
         {
             try
             {
+                this.logger.LogInformation($"Receiving status [{processingStatus.Status}:{processingStatus.Message}]");
                 CleanStatusMessage(processingStatus);
                 this.context.ProcessingStatus.Add(processingStatus);
                 await this.context.SaveChangesAsync();

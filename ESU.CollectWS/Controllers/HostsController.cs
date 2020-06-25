@@ -29,6 +29,21 @@ namespace ESU.CollectWS.Controllers
             return await context.Hosts.Include(x => x.Licenses).ToListAsync();
         }
 
+        [HttpGet("bytempid/{tempid}")]
+        public async Task<ActionResult<Host>> GetByTempId(string tempId)
+        {
+            var host = await this.context.Hosts.Include(x => x.Licenses)
+                .ThenInclude(x => x.Confirmations)
+                .FirstOrDefaultAsync(x => x.TempId == tempId);
+
+            if (host != null)
+            {
+                return host;
+            }
+
+            return NotFound();
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Host>> GetById(int id)
         {
@@ -40,19 +55,19 @@ namespace ESU.CollectWS.Controllers
 
             return NotFound();
         }
-                
+
         [HttpPost]
         public async Task<ActionResult> PostHost(Host host)
         {
             this.logger.LogInformation($"Subscribing host [{host.Name}]...");
-            if(string.IsNullOrEmpty(host.Name))
+            if (string.IsNullOrEmpty(host.Name))
             {
                 return BadRequest("Invalid Host name");
             }
 
             try
             {
-                if(host.SubscriptionDate == default)
+                if (host.SubscriptionDate == default)
                 {
                     host.SubscriptionDate = DateTime.Now;
                 }

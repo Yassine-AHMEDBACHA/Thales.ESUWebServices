@@ -13,7 +13,7 @@ namespace ESU.CollectWS.Controllers
     [ApiController]
     public class ImportsController : ControllerBase
     {
-        private readonly ILogger<LicensesController> logger;
+        private readonly ILogger<ImportsController> logger;
         private readonly ESUContext context;
 
         public ImportsController(ESUContext context, ILogger<ImportsController> logger)
