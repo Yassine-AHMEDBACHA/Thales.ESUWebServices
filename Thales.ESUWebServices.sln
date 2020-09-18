@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESU.Data", "ESU.Data\ESU.Da
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESU.MonitoringWS", "ESU.Monitoring\ESU.MonitoringWS.csproj", "{0523CE6C-A65B-4E93-AA73-FC1D36C9DCCB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ESU.ImportWS", "ESU.ImportWS\ESU.ImportWS.csproj", "{DE5E5B3F-029E-45CC-8712-630FAAB421AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{0523CE6C-A65B-4E93-AA73-FC1D36C9DCCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0523CE6C-A65B-4E93-AA73-FC1D36C9DCCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0523CE6C-A65B-4E93-AA73-FC1D36C9DCCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE5E5B3F-029E-45CC-8712-630FAAB421AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE5E5B3F-029E-45CC-8712-630FAAB421AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE5E5B3F-029E-45CC-8712-630FAAB421AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE5E5B3F-029E-45CC-8712-630FAAB421AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
