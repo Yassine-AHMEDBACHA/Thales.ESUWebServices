@@ -24,7 +24,7 @@ namespace ESU.CollectWS.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProcessingStatus>>> GetAllConfirmations()
+        public async Task<ActionResult<IEnumerable<ProcessingStatus>>> GetAllStatus()
         {
             return await this.context.ProcessingStatus.ToListAsync();
         }

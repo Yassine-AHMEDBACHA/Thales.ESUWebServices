@@ -15,13 +15,13 @@ namespace ESU.CollectWS.Controllers
     {
         private readonly ILogger<LicensesController> logger;
         private readonly ESUContext context;
-        //private readonly ILicensePublisher licensePublisher;
+        private readonly ILicensePublisher licensePublisher;
 
         public LicensesController(ESUContext context, ILogger<LicensesController> logger)
         {
             this.logger = logger;
             this.context = context;
-            //this.licensePublisher = licensePublisher;
+            this.licensePublisher = licensePublisher;
         }
 
         [HttpGet]
@@ -31,10 +31,10 @@ namespace ESU.CollectWS.Controllers
             return await this.context.Licenses.ToListAsync();
         }
 
-        [HttpGet("{installationId}")]
-        public async Task<ActionResult<License>> GetByInstallationId(string installationId)
+        [HttpGet("{hostId}&{installationId}")]
+        public async Task<ActionResult<License>> GetByInstallationId(string hostId, string installationId)
         {
-            var license = await this.context.Licenses.FirstOrDefaultAsync(x => x.InstallationId == installationId);
+            var license = await this.context.Licenses.FirstOrDefaultAsync(x => x.HostId == int.Parse(hostId) && x.InstallationId == installationId);
             if (license != null)
             {
                 return license;
@@ -61,6 +61,7 @@ namespace ESU.CollectWS.Controllers
 
                 this.context.Licenses.Add(license);
                 await this.context.SaveChangesAsync();
+
                 this.logger.LogInformation($"License with installation id [{license.InstallationId}] subscribed with Id=[{license.Id}]");
                 return CreatedAtAction(nameof(this.GetByInstallationId), new { license.InstallationId }, license);
             }

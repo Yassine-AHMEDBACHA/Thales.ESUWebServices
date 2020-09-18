@@ -40,11 +40,27 @@ namespace ESU.CollectWS.Controllers
                 this.logger.LogInformation($"ConfirmationKey Not found for installation id : [{installationId}]");
                 return NotFound();
             }
-            
+
             this.logger.LogInformation($"ConfirmationKey found for installation id : [{installationId}] : [{confirmation.Content}]");
             return confirmation;
         }
 
+        [HttpGet("bylicenseId/{licenseId}")]
+        public async Task<ActionResult<string>> GetByLicenseId(int licenseId)
+        {
+            this.logger.LogInformation($"Requesting confirmationKey for license id : [{licenseId}]");
+            var confirmation = await this.context.Confirmations
+                .Where(x => x.LicenseId == licenseId)
+                .FirstOrDefaultAsync(x => x.Status != Status.Failed);
+            if (confirmation == null)
+            {
+                this.logger.LogInformation($"ConfirmationKey Not found for installation id : [{licenseId}]");
+                return NotFound();
+            }
+
+            this.logger.LogInformation($"ConfirmationKey found for license ID : [{licenseId}] : [{confirmation.Content}]");
+            return confirmation.Content;
+        }
 
     }
 }

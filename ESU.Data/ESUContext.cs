@@ -1,6 +1,7 @@
 ﻿using ESU.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Security.Cryptography.X509Certificates;
 
 namespace ESU.Data
 {
@@ -19,6 +20,8 @@ namespace ESU.Data
         public DbSet<Confirmation> Confirmations { get; set; }
 
         public DbSet<License> Licenses { get; set; }
+
+        public DbSet<ActivatedLicense> ActivatedLicenses { get; set; }
 
         public DbSet<ProcessingStatus> ProcessingStatus { get; set; }
 
@@ -40,6 +43,9 @@ namespace ESU.Data
 
             modelBuilder.Entity<License>().ToTable("Licenses")
                 .HasOne(x => x.Host);
+
+            modelBuilder.Entity<ActivatedLicense>().ToTable("ActivatedLicenses")
+                .HasOne(x => x.License);
         }
     }
 }

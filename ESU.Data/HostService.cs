@@ -35,7 +35,9 @@ namespace ESU.Data
                 return query
                .Include(x => x.ProcessingStatus)
                .Include(x => x.Licenses)
-               .ThenInclude(l => l.Confirmations);
+               .ThenInclude(l => l.Confirmations)
+               .Include(x => x.Licenses)
+               .ThenInclude(l => l.ActivatedLicense);
             }
 
             if (filtringParameters.MinDate > DateTime.MinValue)
@@ -84,10 +86,11 @@ namespace ESU.Data
 
             if (filtringParameters.WithLicenses)
             {
-                var temp = query.Include(x => x.Licenses);
+                var temp = query.Include(x => x.Licenses).ThenInclude(x=>x.ActivatedLicense);
                 if (filtringParameters.WithConfirmations)
                 {
-                    query = temp.ThenInclude(l => l.Confirmations);
+                    query = temp.Include(x => x.Licenses)
+                        .ThenInclude(l => l.Confirmations);
                 }
                 else
                 {

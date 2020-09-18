@@ -18,5 +18,7 @@ namespace ESU.Data.Models
         public Host Host { get; set; }
 
         public Collection<Confirmation> Confirmations { get; set; }
+
+        public ActivatedLicense ActivatedLicense { get; set; }
     }
 }

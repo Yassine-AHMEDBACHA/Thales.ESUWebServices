@@ -36,6 +36,8 @@ namespace ESU.Data.Models
 
         public bool WithConfirmations { get; set; } = true;
 
+        public bool WithActivated { get; set; } = true;
 
+        public bool OnlyActivated { get; set; } = false;
     }
 }
