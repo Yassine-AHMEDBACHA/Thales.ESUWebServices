@@ -21,10 +21,10 @@ namespace ESU.Monitoring.Core
         {
             var stringBuilder = new StringBuilder();
             var hosts = this.hostService.LoadHost(hostFiltringParameters);
-            stringBuilder.AppendLine($"Id;Name;Mail;Site;SubscriptionDate;InstallationId;ProductId;InstallationDate;ConfirmationKey;ConfirmationDate;Status;StatusDate");
+            stringBuilder.AppendLine($"Id;Name;Network;Mail;Site;SubscriptionDate;InstallationId;ProductId;InstallationDate;ConfirmationKey;ConfirmationDate;Status;StatusDate");
             foreach (var host in hosts)
             {
-                var prefix = $"{host.Id};{ host.Name};{ host.Mail};{ host.Site};{host.SubscriptionDate.ToString("dd/MM/yyyy HH:mm:ss")}";
+                var prefix = $"{host.Id};{ host.Name};{host.Network};{ host.Mail};{ host.Site};{host.SubscriptionDate.ToString("dd/MM/yyyy HH:mm:ss")}";
                 if (host.Licenses.Count > 0)
                 {
                     foreach (var license in host.Licenses)
