@@ -35,6 +35,7 @@ namespace ESU.CollectWS.Controllers
             var confirmation = await this.context.Confirmations
                 .Where(x => x.License.InstallationId == installationId)
                 .FirstOrDefaultAsync(x => x.Status != Status.Failed);
+
             if (confirmation == null)
             {
                 this.logger.LogInformation($"ConfirmationKey Not found for installation id : [{installationId}]");

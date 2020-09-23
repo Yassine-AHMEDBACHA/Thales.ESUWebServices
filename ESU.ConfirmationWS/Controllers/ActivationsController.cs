@@ -37,10 +37,34 @@ namespace ESU.ConfirmationWS.Controllers
             return this.licenseActivator.LastRun;
         }
 
+        [HttpGet("lastcount")]
+        public int GetLastCount()
+        {
+            return this.licenseActivator.LastCount;
+        }
+
+        [HttpGet("total")]
+        public int GetTotal()
+        {
+            return this.licenseActivator.Total;
+        }
+
         [HttpGet("firstrun")]
         public DateTime GeFirstRun()
         {
             return this.licenseActivator.FirstRun;
+        }
+
+        [HttpGet("lastkey")]
+        public string Lastkey()
+        {
+            return this.licenseActivator.LastKey;
+        }
+
+        [HttpGet("step")]
+        public string CurrentStep()
+        {
+            return this.licenseActivator.Step;
         }
 
         [HttpGet("{id}")]

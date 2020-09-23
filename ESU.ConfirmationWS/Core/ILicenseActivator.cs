@@ -9,6 +9,16 @@ namespace ESU.ConfirmationWS.Core
 
         DateTime FirstRun { get; }
 
+        int LastCount { get; }
+
+        int Total { get; }
+
+        string LastKey { get; }
+
+        string Step { get; }
+
         void Append(License license);
+
+
     }
 }
