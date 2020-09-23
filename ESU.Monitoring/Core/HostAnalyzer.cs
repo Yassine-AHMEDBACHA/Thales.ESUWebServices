@@ -14,7 +14,7 @@ namespace ESU.Monitoring.Core
                 yield return "Product Key installed on the host";
                 foreach (var license in host.Licenses)
                 {
-                    var confirmation = license?.Confirmations.FirstOrDefault(x => x.Status == Status.Success);
+                    var confirmation = license?.Confirmations.FirstOrDefault(x => x.HasSucceeded);
                     if (confirmation != null)
                     {
                         yield return "Confirmation key retreived";

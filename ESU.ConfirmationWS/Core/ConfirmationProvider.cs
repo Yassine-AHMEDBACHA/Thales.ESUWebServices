@@ -39,12 +39,12 @@ namespace ESU.ConfirmationWS.Core
             if (isSucces)
             {
                 this.logger.LogInformation("Requesting confirmation for installationId Succes");
-                confirmation.Status = Status.Success;
+                confirmation.HasSucceeded = true;
             }
             else
             {
                 this.logger.LogInformation("Requesting confirmation for installationId failed");
-                confirmation.Status = Status.Failed;
+                confirmation.HasSucceeded = false;
             }
 
             return confirmation;

@@ -24,7 +24,7 @@ namespace ESU.Monitoring.Controllers
         public async Task<int> GetConfirmationKeyCount()
         {
             var count = await this.context.Confirmations
-                .Where(x => x.Status == Data.Models.Status.Success)
+                .Where(x => x.HasSucceeded)
                 .CountAsync();
 
             return count;

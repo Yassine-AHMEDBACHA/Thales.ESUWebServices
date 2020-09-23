@@ -4,8 +4,6 @@ namespace ESU.Data.Models
 {
     public class Confirmation : Row
     {
-        public Status Status { get; set; }
-
         public string Content { get; set; }
 
         public DateTime RequestDate { get; set; }
@@ -15,5 +13,7 @@ namespace ESU.Data.Models
         public int LicenseId { get; set; }
 
         public License License { get; set; }
+
+        public bool HasSucceeded { get; set; }
     }
 }

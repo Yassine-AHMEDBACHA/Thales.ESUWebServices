@@ -29,12 +29,12 @@ namespace ESU.CollectWS.Controllers
         }
 
         [HttpGet("{installationId}")]
-        public async Task<ActionResult<Confirmation>> GetByInstallationId(string installationId)
+        public async Task<ActionResult<object>> GetByInstallationId(string installationId)
         {
             this.logger.LogInformation($"Requesting confirmationKey for installation id : [{installationId}]");
             var confirmation = await this.context.Confirmations
                 .Where(x => x.License.InstallationId == installationId)
-                .FirstOrDefaultAsync(x => x.Status != Status.Failed);
+                .FirstOrDefaultAsync(x => x.HasSucceeded);
 
             if (confirmation == null)
             {
@@ -43,7 +43,7 @@ namespace ESU.CollectWS.Controllers
             }
             
             this.logger.LogInformation($"ConfirmationKey found for installation id : [{installationId}] : [{confirmation.Content}]");
-            return confirmation;
+            return new {confirmation.Content, confirmation.LicenseId,Status = "Success" };
         }
 
 

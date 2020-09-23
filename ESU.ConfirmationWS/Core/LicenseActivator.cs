@@ -43,7 +43,7 @@ namespace ESU.ConfirmationWS.Core
             this.licenses = new ConcurrentQueue<License>();
             this.timer = this.GetTimer(this.confirguration);
 
-            this.Loop();
+            Task.Factory.StartNew(this.Loop);
         }
 
         private Timer GetTimer(IConfiguration confirguration)
@@ -102,7 +102,7 @@ namespace ESU.ConfirmationWS.Core
 
         private void LoadlicencesToActivate()
         {
-            var licencesToActivate = this.context.Licenses.Where(x => x.Confirmations.All(c => c.Status != Status.Error && c.Status != Status.Success));
+            var licencesToActivate = this.context.Licenses.Where(x => !x.Confirmations.Any(c => c.HasSucceeded));
             foreach (var item in licencesToActivate)
             {
                 this.licenses.Enqueue(item);

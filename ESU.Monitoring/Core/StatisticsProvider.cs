@@ -40,7 +40,7 @@ namespace ESU.Monitoring.Core
                 {
                     stats.GetOrAddValue(license.InstallationDate.Date).CollectedHosts++;
 
-                    foreach (var confirmation in license.Confirmations.Where(s => s.Status == Status.Success))
+                    foreach (var confirmation in license.Confirmations.Where(s => s.HasSucceeded))
                     {
                         stats.GetOrAddValue(confirmation.ResponseDate.Date).AvailableConfirmations++;
                     }
@@ -61,7 +61,7 @@ namespace ESU.Monitoring.Core
             var stat = new Stat();
             stat.SubscribedHosts = await this.hostService.CountAsync();
             stat.CollectedHosts = await this.context.Licenses.CountAsync();
-            stat.AvailableConfirmations = await this.context.Confirmations.Where(x => x.Status == Status.Success).CountAsync();
+            stat.AvailableConfirmations = await this.context.Confirmations.Where(x => x.HasSucceeded).CountAsync();
             stat.ActivatedHosts =await this.context.Hosts.Where(x => x.ProcessingStatus.Any(x => x.Status == Status.Success)).CountAsync();
             return stat;
         }

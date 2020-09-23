@@ -30,7 +30,7 @@ namespace ESU.Monitoring.Core
                     foreach (var license in host.Licenses)
                     {
                         prefix = $"{prefix};{ license.InstallationId};{ license.ExtendedProductId};{license.InstallationDate.ToString("dd/MM/yyyy HH:mm:ss")}";
-                        var confirmations = license.Confirmations.Where(x => x.Status == Status.Success);
+                        var confirmations = license.Confirmations.Where(x => x.HasSucceeded);
                         if (confirmations.Any())
                         {
                             foreach (var confirmation in confirmations)
