@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace ESU.CollectWS.Controllers
@@ -32,7 +33,8 @@ namespace ESU.CollectWS.Controllers
         [HttpGet("bytempid/{tempid}")]
         public async Task<ActionResult<Host>> GetByTempId(string tempId)
         {
-            var host = await this.context.Hosts.Include(x => x.Licenses)
+            var host = await this.context.Hosts
+                .Include(x => x.Licenses)
                 .ThenInclude(x => x.Confirmations)
                 .FirstOrDefaultAsync(x => x.TempId == tempId);
 

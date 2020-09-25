@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace ESU.Data
@@ -38,43 +39,50 @@ namespace ESU.Data
                .ThenInclude(l => l.Confirmations);
             }
 
-            if (filtringParameters.MinDate > DateTime.MinValue)
+            if (filtringParameters.Id > 0)
             {
-                query = query.Where(x => x.SubscriptionDate >= filtringParameters.MinDate);
-                if (filtringParameters.MaxDate >= filtringParameters.MinDate)
+                query = query.Where(x => x.Id == filtringParameters.Id);
+            }
+            else
+            {
+                if (filtringParameters.MinDate > DateTime.MinValue)
                 {
-                    query = query.Where(x => x.SubscriptionDate <= filtringParameters.MaxDate);
+                    query = query.Where(x => x.SubscriptionDate >= filtringParameters.MinDate);
+                    if (filtringParameters.MaxDate >= filtringParameters.MinDate)
+                    {
+                        query = query.Where(x => x.SubscriptionDate <= filtringParameters.MaxDate);
+                    }
                 }
-            }
 
-            if (!string.IsNullOrEmpty(filtringParameters.Name))
-            {
-                query = query.Where(x => x.Name.StartsWith(filtringParameters.Name));
-            }
+                if (!string.IsNullOrEmpty(filtringParameters.Name))
+                {
+                    query = query.Where(x => x.Name.StartsWith(filtringParameters.Name));
+                }
 
-            if (!string.IsNullOrEmpty(filtringParameters.Mail))
-            {
-                query = query.Where(x => x.Mail.StartsWith(filtringParameters.Mail));
-            }
+                if (!string.IsNullOrEmpty(filtringParameters.Mail))
+                {
+                    query = query.Where(x => x.Mail.StartsWith(filtringParameters.Mail));
+                }
 
-            if (!string.IsNullOrEmpty(filtringParameters.Site))
-            {
-                query = query.Where(x => x.Site.StartsWith(filtringParameters.Site));
-            }
+                if (!string.IsNullOrEmpty(filtringParameters.Site))
+                {
+                    query = query.Where(x => x.Site.StartsWith(filtringParameters.Site));
+                }
 
-            if (!string.IsNullOrEmpty(filtringParameters.Network))
-            {
-                query = query.Where(x => x.Network.StartsWith(filtringParameters.Network));
-            }
+                if (!string.IsNullOrEmpty(filtringParameters.Network))
+                {
+                    query = query.Where(x => x.Network.StartsWith(filtringParameters.Network));
+                }
 
-            if (filtringParameters.Offset > 0)
-            {
-                query = query.Skip(filtringParameters.Offset);
-            }
+                if (filtringParameters.Offset > 0)
+                {
+                    query = query.Skip(filtringParameters.Offset);
+                }
 
-            if (filtringParameters.Limit > 0)
-            {
-                query = query.Take(filtringParameters.Limit);
+                if (filtringParameters.Limit > 0)
+                {
+                    query = query.Take(filtringParameters.Limit);
+                }
             }
 
             if (filtringParameters.WithStatus)
@@ -95,6 +103,8 @@ namespace ESU.Data
                 }
             }
 
+            
+
             return query;
         }
 
@@ -113,9 +123,9 @@ namespace ESU.Data
             return this.context.Hosts.Find(id);
         }
 
-        public ValueTask<Host> FindAsync(int id)
+        public Task<Host> FindAsync(int id)
         {
-            return this.context.Hosts.FindAsync(id);
+            return this.context.Hosts.Include(x=>x.Licenses).ThenInclude(x=>x.Confirmations).Include(x=>x.ProcessingStatus).FirstOrDefaultAsync(x=>x.Id == id);
         }
     }
 }

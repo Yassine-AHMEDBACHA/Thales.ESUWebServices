@@ -18,6 +18,8 @@ namespace ESU.Data.Models
 
         public DateTime MaxDate { get; set; }
 
+        public int Id { get; set; }
+
         public string Name { get; set; }
 
         public string Mail { get; set; }

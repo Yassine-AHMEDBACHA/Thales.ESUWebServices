@@ -1,9 +1,17 @@
-﻿namespace ESU.Data.Models
+﻿using System;
+
+namespace ESU.Data.Models
 {
-    public enum Status
+    public class Status
     {
-        Success = 1,
-        Error,
-        Failed
+        public int Id { get; set; }
+
+        public string Message { get; set; }
+
+        public DateTime StatusDate { get; set; }
+
+        public int HostId { get; set; }
+
+        public Host Host { get; set; }
     }
 }

@@ -42,10 +42,12 @@ namespace ESU.Monitoring.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Host>>> GetHost([FromQuery] HostFilteringParameters filter)
         {
-
+            var perf = System.Diagnostics.Stopwatch.StartNew();
             this.logger.LogInformation($"Loading hosts where {filter?.ToString()}");
             var hosts = await this.hostService.LoadHostAsync(filter);
 
+            perf.Stop();
+            var tt = perf.Elapsed;
             if (hosts.Count == 0)
             {
                 return NotFound();

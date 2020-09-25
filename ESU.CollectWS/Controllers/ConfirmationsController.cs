@@ -47,5 +47,23 @@ namespace ESU.CollectWS.Controllers
         }
 
 
+        [HttpGet("v3/{licenseId}")]
+        public async Task<ActionResult<string>> GetByLicenseId(int licenseId)
+        {
+            this.logger.LogInformation($"Requesting confirmationKey for license with ID : [{licenseId}]");
+            var confirmation = await this.context.Confirmations
+                .Where(x => x.LicenseId == licenseId)
+                .FirstOrDefaultAsync(x => x.HasSucceeded);
+
+            if (confirmation == null)
+            {
+                this.logger.LogInformation($"ConfirmationKey Not found for for license with ID : [{licenseId}]");
+                return NotFound();
+            }
+
+            this.logger.LogInformation($"ConfirmationKey found for for license with ID : [{licenseId}] : [{confirmation.Content}]");
+            return confirmation.Content;
+        }
+
     }
 }

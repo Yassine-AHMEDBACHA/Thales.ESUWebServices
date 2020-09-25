@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Threading.Tasks;
 
 namespace ESU.CollectWS.Controllers
@@ -41,6 +42,24 @@ namespace ESU.CollectWS.Controllers
             }
 
             return NotFound();
+        }
+
+        [HttpGet("v3/{hostid}&{installationId}")]
+        public async Task<ActionResult<License>> GetByInstallationId(int hostid, string installationId)
+        {
+            var license = await this.context.Licenses.FirstOrDefaultAsync(x => x.HostId == hostid && x.InstallationId == installationId);
+            if (license != null)
+            {
+                return license;
+            }
+
+            return NotFound();
+        }
+
+        [HttpPost("v3")]
+        public async Task<ActionResult> PostLicense(License license)
+        {
+            return await this.Post(license);
         }
 
         [HttpPost]

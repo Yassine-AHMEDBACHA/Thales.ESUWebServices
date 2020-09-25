@@ -36,10 +36,10 @@ namespace ESU.Monitoring.Core
                             foreach (var confirmation in confirmations)
                             {
                                 prefix = $"{prefix};{confirmation.Content};{confirmation.ResponseDate}";
-                                var successStatus = host.ProcessingStatus.FirstOrDefault(x => x.Status == Status.Success);
-                                if (successStatus != null)
+                                var successStatus = host.Licenses.Any(x => x.Activation != null);
+                                if (successStatus)
                                 {
-                                    stringBuilder.AppendLine($"{prefix};{successStatus.Message};{successStatus.StatusDate.ToString("dd/MM/yyyy HH:mm:ss")}");
+                                    stringBuilder.AppendLine($"{prefix};LicenseActivated;");
                                 }
                                 else
                                 {

@@ -6,8 +6,6 @@ namespace ESU.Data.Models
     {
         public int Id { get; set; }
 
-        public Status Status { get; set; }
-
         public string Message { get; set; }
 
         public DateTime StatusDate { get; set; }

@@ -62,7 +62,7 @@ namespace ESU.Monitoring.Core
             stat.SubscribedHosts = await this.hostService.CountAsync();
             stat.CollectedHosts = await this.context.Licenses.CountAsync();
             stat.AvailableConfirmations = await this.context.Confirmations.Where(x => x.HasSucceeded).CountAsync();
-            stat.ActivatedHosts =await this.context.Hosts.Where(x => x.ProcessingStatus.Any(x => x.Status == Status.Success)).CountAsync();
+            //stat.ActivatedHosts =await this.context.Hosts.Where(x => x.ProcessingStatus.Any(x => x.Status == Status.Success)).CountAsync();
             return stat;
         }
     }
