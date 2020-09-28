@@ -20,10 +20,16 @@ namespace ESU.Monitoring.Controllers
             this.hostService = hostService;
         }
 
-        [HttpGet("count")]
+        [HttpGet("/count")]
         public async Task<int> count()
         {
             return await this.hostService.CountAsync();
+        }
+
+        [HttpGet("/version")]
+        public string version()
+        {
+            return "V 2.9";
         }
 
         [HttpGet("{id}")]
