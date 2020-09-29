@@ -26,12 +26,6 @@ namespace ESU.Monitoring.Controllers
             return await this.hostService.CountAsync();
         }
 
-        [HttpGet("/version")]
-        public string version()
-        {
-            return "V 2.9";
-        }
-
         [HttpGet("{id}")]
         public async Task<ActionResult<Host>> GetById(int id)
         {

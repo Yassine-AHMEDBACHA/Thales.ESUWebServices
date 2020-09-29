@@ -42,10 +42,10 @@ namespace ESU.CollectWS.Controllers
         }
 
         [HttpGet("lastbyhostid/{id}")]
-        public async Task<ActionResult<Status>> GetLastProcessingStatusByhostId(int id)
+        public async Task<ActionResult<ProcessingStatus>> GetLastProcessingStatusByhostId(int id)
         {
-            var activationStatus = await this.context.Status
-                .OrderByDescending(x => x.Id)
+            var activationStatus = await this.context.ProcessingStatus
+                .OrderByDescending(x => x.StatusDate)
                 .FirstOrDefaultAsync(x => x.HostId == id);
 
             if (activationStatus != null)
@@ -63,10 +63,13 @@ namespace ESU.CollectWS.Controllers
             {
                 this.logger.LogInformation($"Receiving status {processingStatus.Message}]");
                 CleanStatusMessage(processingStatus);
+                
                 if (processingStatus.Message.Contains("activated"))
                 {
-                    var license = this.context.Hosts.Include(x => x.Licenses).FirstOrDefault(x => x.Id == processingStatus.HostId)?.Licenses.FirstOrDefault();
-                    if (license != null)
+                    var license = this.context.Hosts.Include(x => x.Licenses)
+                        .ThenInclude(x=>x.Activation)
+                        .FirstOrDefault(x => x.Id == processingStatus.HostId)?.Licenses.FirstOrDefault();
+                    if (license != null && license.Activation == null)
                     {
                         this.context.Activations.Add(new Activation { LicenseId = license.Id, ActivationDate = processingStatus.StatusDate });
                     }
@@ -76,9 +79,10 @@ namespace ESU.CollectWS.Controllers
                     var status = this.GetStatus(processingStatus);
                     this.context.Status.Add(status);
                 }
+
                 await this.context.SaveChangesAsync();
                 this.logger.LogInformation($"Processing status saved for host [{ processingStatus.HostId} ]");
-                return CreatedAtAction(nameof(this.GetProcessingStatusById), new { processingStatus.HostId }, processingStatus);
+                return Created(nameof(this.GetProcessingStatusById), processingStatus);
             }
             catch (Exception ex)
             {
