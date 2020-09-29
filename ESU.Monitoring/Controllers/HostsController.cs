@@ -2,6 +2,7 @@
 using ESU.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -42,18 +43,21 @@ namespace ESU.Monitoring.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Host>>> GetHost([FromQuery] HostFilteringParameters filter)
         {
-            var perf = System.Diagnostics.Stopwatch.StartNew();
             this.logger.LogInformation($"Loading hosts where {filter?.ToString()}");
-            var hosts = await this.hostService.LoadHostAsync(filter);
-
-            perf.Stop();
-            var tt = perf.Elapsed;
-            if (hosts.Count == 0)
+            try
             {
-                return NotFound();
-            }
+                var hosts = await this.hostService.LoadHostAsync(filter);
+                if (hosts.Count == 0)
+                {
+                    return NotFound();
+                }
 
-            return Ok(hosts);
+                return Ok(hosts);
+            }
+            catch(Exception ex)
+            {
+                return Problem(ex.Message);
+            }
         }
     }
 }

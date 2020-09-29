@@ -28,6 +28,8 @@ namespace ESU.Data.Models
 
         public string Network { get; set; }
 
+        public string Entity { get; set; }
+
         public int Limit { get; set; }
 
         public int Offset { get; set; }
@@ -38,6 +40,9 @@ namespace ESU.Data.Models
 
         public bool WithConfirmations { get; set; } = true;
 
-
+        public override string ToString()
+        {
+            return $"Name like '{this.Name}%' and Network like '{this.Network}%' and site like '{this.Site}%' and Entity like '{this.Entity}'";
+        }
     }
 }
