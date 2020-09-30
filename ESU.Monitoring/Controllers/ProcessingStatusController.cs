@@ -49,7 +49,7 @@ namespace ESU.MonitoringWS.Controllers
             filteringParameters.WithLicenses = false;
             filteringParameters.WithStatus = true;
             var hosts = await hostService.LoadHostAsync();
-            if (hosts.Count > 0)
+            if (hosts.Count() > 0)
             {
                 return Ok(hosts.Select(h => new { h.Name, h.Id, h.ProcessingStatus }));
             }

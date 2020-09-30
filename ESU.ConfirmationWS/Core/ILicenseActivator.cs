@@ -18,5 +18,7 @@ namespace ESU.ConfirmationWS.Core
         string Step { get; }
 
         void Append(License license);
+
+        void StartProcessing();
     }
 }

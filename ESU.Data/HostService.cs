@@ -1,10 +1,9 @@
-﻿using ESU.Data.Models;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
+using ESU.Data.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ESU.Data
 {
@@ -63,6 +62,11 @@ namespace ESU.Data
                 query = query.Where(x => x.Site.StartsWith(filtringParameters.Site));
             }
 
+            if (!string.IsNullOrEmpty(filtringParameters.Entity))
+            {
+                query = query.Where(x => x.Site.StartsWith(filtringParameters.Entity));
+            }
+
             if (!string.IsNullOrEmpty(filtringParameters.Network))
             {
                 query = query.Where(x => x.Network.StartsWith(filtringParameters.Network));
@@ -85,10 +89,10 @@ namespace ESU.Data
 
             if (filtringParameters.WithLicenses)
             {
-                var temp = query.Include(x => x.Licenses);
+                var temp = query.Include(x => x.Licenses).ThenInclude(x => x.Activation);
                 if (filtringParameters.WithConfirmations)
                 {
-                    query = temp.ThenInclude(l => l.Confirmations);
+                    query = temp.Include(x => x.Licenses).ThenInclude(l => l.Confirmations);
                 }
                 else
                 {
@@ -121,6 +125,8 @@ namespace ESU.Data
             return this.context.Hosts
                 .Include(x => x.Licenses)
                 .ThenInclude(x => x.Confirmations)
+                .Include(x=>x.Licenses)
+                .ThenInclude(x=>x.Activation)
                 .Include(x => x.ProcessingStatus)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }

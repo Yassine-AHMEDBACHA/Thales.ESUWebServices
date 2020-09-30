@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -17,6 +18,7 @@ namespace ESU.ConfirmationWS.Core
         private readonly ESUContext context;
         private readonly ConcurrentQueue<License> licenses;
         private readonly Timer timer;
+        private object locker = new object();
 
         public DateTime LastRun { get; private set; }
 
@@ -31,6 +33,8 @@ namespace ESU.ConfirmationWS.Core
         public string LastKey { get; private set; }
 
         public string Step { get; private set; }
+
+        
 
         public LicenseActivator(IConfiguration confirguration, ESUContext context, IConfirmationProvider confirmationProvider, ILogger<LicenseActivator> logger)
         {
@@ -63,6 +67,35 @@ namespace ESU.ConfirmationWS.Core
         {
             this.licenses.Enqueue(license);
         }
+                
+        public void StartProcessing()
+        {
+            lock (this.locker)
+            {
+                this.Step = $"Processing... [{this.licenses.Count }]";
+                while (!this.licenses.IsEmpty)
+                {
+                    this.licenses.TryDequeue(out var license);
+                    try
+                    {
+                        this.LastKey = license.InstallationId;
+                        var confirmation = this.confirmationProvider.GetConfirmation(license.InstallationId, license.ExtendedProductId);
+                        confirmation.LicenseId = license.Id;
+                        this.context.Confirmations.Add(confirmation);
+                        this.context.SaveChanges();
+                        this.LastCount++;
+                        this.Total++;
+                        this.LastKey = $"[{license.InstallationId}]->[{confirmation.Content}]";
+                    }
+                    catch (Exception exception)
+                    {
+                        this.logger.LogError(exception, string.Empty);
+                        this.LastKey = exception.Message;
+                    }
+                }
+                this.logger.LogInformation("Done.");
+            }
+        }
 
         private void Loop()
         {
@@ -74,28 +107,7 @@ namespace ESU.ConfirmationWS.Core
                 this.LoadlicencesToActivate();
             }
             this.logger.LogInformation(this.licenses.Count + " license(s) to activate...");
-            this.Step = $"Processing... [{this.licenses.Count }]";
-            while (!this.licenses.IsEmpty)
-            {
-                this.licenses.TryDequeue(out var license);
-                try
-                {
-                    this.LastKey = license.InstallationId;
-                    var confirmation = this.confirmationProvider.GetConfirmation(license.InstallationId, license.ExtendedProductId);
-                    confirmation.LicenseId = license.Id;
-                    this.context.Confirmations.Add(confirmation);
-                    this.context.SaveChanges();
-                    this.LastCount++;
-                    this.Total++;
-                    this.LastKey = $"[{license.InstallationId}]->[{confirmation.Content}]";
-                }
-                catch (Exception exception)
-                {
-                    this.logger.LogError(exception, string.Empty);
-                    this.LastKey = exception.Message;
-                }
-            }
-            this.logger.LogInformation("Done.");
+            this.StartProcessing();
             this.Step = "Stand by";
             this.timer.Start();
         }

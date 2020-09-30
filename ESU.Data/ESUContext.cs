@@ -27,6 +27,10 @@ namespace ESU.Data
 
         public DbSet<Activation> Activations { get; set; }
 
+        public DbSet<CurrentHost> CurrentHosts { get; set; }
+
+
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(this.configuration.GetConnectionString("ESU"), sqlOptions => sqlOptions.CommandTimeout(300));
@@ -36,6 +40,10 @@ namespace ESU.Data
         {
             modelBuilder.Entity<Host>()
                 .ToTable("Hosts");
+
+            modelBuilder.Entity<CurrentHost>().ToView("CurrentHosts")
+                .HasNoKey();
+                
 
             modelBuilder.Entity<Confirmation>().ToTable("Confirmations")
                 .HasOne(x => x.License);

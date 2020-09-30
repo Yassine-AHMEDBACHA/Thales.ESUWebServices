@@ -29,10 +29,11 @@ namespace ESU.Monitoring.Controllers
             this.logger.LogInformation($"Loading hosts where {filter?.ToString()}");
             var hosts = await this.hostService.LoadHostAsync(filter);
 
-            if (hosts.Count == 0)
+            if (!hosts.Any())
             {
                 return NotFound();
             }
+
             var result = hosts.Select(h => new { Trace = this.hostAnalyzer.GetHostTrace(h), h.Name, h.Id })
                 .Select(s => new { s.Name, Status = s.Trace.LastOrDefault(), s.Id, s.Trace });
 

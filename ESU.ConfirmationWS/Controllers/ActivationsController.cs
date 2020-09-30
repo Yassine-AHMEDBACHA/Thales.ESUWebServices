@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ESU.ConfirmationWS.Controllers
@@ -79,6 +80,32 @@ namespace ESU.ConfirmationWS.Controllers
 
             return NotFound();
         }
+
+        [HttpGet("Load/{hostName}")]
+        public async Task<ActionResult> Load(string hostName)
+        {
+            try
+            {
+                var licenses = await this.context.Licenses
+                    .Where(l => l.Host.Name.StartsWith(hostName) && !l.Confirmations.Any(c => c.HasSucceeded))
+                    .ToListAsync();
+
+                int i = 0;
+                foreach (var item in licenses)
+                {
+                    i++;
+                    this.licenseActivator.Append(item);
+                }
+
+                this.licenseActivator.StartProcessing();
+                return Ok($"-{i} license(s) processed");
+            }
+            catch(Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+        
 
         [HttpPost]
         public void Post(License license)
