@@ -31,5 +31,7 @@ namespace ESU.Data.Models
 
         public ICollection<ProcessingStatus> ProcessingStatus { get; set; }
 
+        public ICollection<Status> Status { get; set; }
+
     }
 }

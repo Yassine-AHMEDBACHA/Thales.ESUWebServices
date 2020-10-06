@@ -43,7 +43,7 @@ namespace ESU.CollectWS.Controllers
             }
             
             this.logger.LogInformation($"ConfirmationKey found for installation id : [{installationId}] : [{confirmation.Content}]");
-            return new {confirmation.Content, confirmation.LicenseId,Status = "Success" };
+            return new {confirmation.Content, confirmation.LicenseId, Status = 1 };
         }
 
 

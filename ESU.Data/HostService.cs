@@ -18,25 +18,22 @@ namespace ESU.Data
 
         public async Task<List<Host>> LoadHostAsync(HostFilteringParameters filtringParameters = null)
         {
+
             var query = this.GetHostQuery(filtringParameters);
             return await query.ToListAsync();
         }
 
         public List<Host> LoadHost(HostFilteringParameters filtringParameters = null)
         {
-            return this.LoadHostAsync(filtringParameters).Result;
+            return  this.LoadHostAsync(filtringParameters).Result;
         }
 
         private IQueryable<Host> GetHostQuery(HostFilteringParameters filtringParameters = null)
         {
-            var query = this.context.Hosts.AsQueryable();
-            if (filtringParameters == null)
-            {
-                return query
-               .Include(x => x.ProcessingStatus)
-               .Include(x => x.Licenses)
-               .ThenInclude(l => l.Confirmations);
-            }
+            
+            var query = this.context.Hosts
+                .AsNoTracking()
+                .AsQueryable();
 
             if (filtringParameters.MinDate > DateTime.MinValue)
             {
@@ -84,7 +81,7 @@ namespace ESU.Data
 
             if (filtringParameters.WithStatus)
             {
-                query = query.Include(x => x.ProcessingStatus);
+                query = query.Include(x => x.Status);
             }
 
             if (filtringParameters.WithLicenses)
@@ -100,7 +97,7 @@ namespace ESU.Data
                 }
             }
 
-
+            query = query.Include(x => x.ProcessingStatus);
 
             return query;
         }
@@ -109,7 +106,7 @@ namespace ESU.Data
         {
             return this.context.Hosts.Count();
         }
-
+        
         public Task<int> CountAsync()
         {
             return this.context.Hosts.CountAsync();
@@ -122,13 +119,15 @@ namespace ESU.Data
 
         public Task<Host> FindAsync(int id)
         {
-            return this.context.Hosts
+            var host = this.context.Hosts
                 .Include(x => x.Licenses)
                 .ThenInclude(x => x.Confirmations)
-                .Include(x=>x.Licenses)
-                .ThenInclude(x=>x.Activation)
-                .Include(x => x.ProcessingStatus)
+                .Include(x => x.Licenses)
+                .ThenInclude(x => x.Activation)
+                .Include(x=>x.Status)
                 .FirstOrDefaultAsync(x => x.Id == id);
+
+                return host;
         }
     }
 }

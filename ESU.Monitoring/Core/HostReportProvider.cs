@@ -1,45 +1,67 @@
 ﻿using ESU.Data;
 using ESU.Data.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ESU.Monitoring.Core
 {
     public class HostReportProvider
     {
         private readonly HostService hostService;
+        private readonly ESUContext context;
         private readonly ILogger<HostReportProvider> logger;
 
-        public HostReportProvider(HostService hostService, ILogger<HostReportProvider> logger)
+        public HostReportProvider(HostService hostService, ESUContext context, ILogger<HostReportProvider> logger)
         {
             this.hostService = hostService;
+            this.context = context;
             this.logger = logger;
         }
 
-        public byte[] GetReportAsMemoryStream(HostFilteringParameters hostFiltringParameters)
+        public async Task<byte[]> GetReportAsMemoryStream(HostFilteringParameters hostFiltringParameters)
         {
             var stringBuilder = new StringBuilder();
-            var hosts = this.hostService.LoadHost(hostFiltringParameters);
-            stringBuilder.AppendLine($"Id;Name;Network;Entity;Mail;Site;SubscriptionDate;InstallationId;ProductId;InstallationDate;ConfirmationKey;ConfirmationDate;Status;StatusDate");
+           
+            var currentlicenses = await this.context.ProductKeys
+                .Where(x => hostFiltringParameters.ViewDate >= x.StartDate && hostFiltringParameters.ViewDate < x.EndDate)
+                .Select(x => x.ProductKey)
+                .ToListAsync();
+                
+
+            var hosts = await this.hostService.LoadHostAsync(hostFiltringParameters);
+            
+            stringBuilder.AppendLine($"Id;Name;Network;Entity;Mail;Site;SubscriptionDate;InstallationId;ProductId;ProductKey;InstallationDate;ConfirmationKey;ConfirmationDate;Status;StatusDate");
             foreach (var host in hosts)
             {
-                var prefix = $"{host.Id};{ host.Name};{host.Network};{host.Identity};{ host.Mail};{ host.Site};{host.SubscriptionDate.ToString("dd/MM/yyyy HH:mm:ss")}";
+                var lastEvent = hostFiltringParameters.ViewDate;
+                var dumpHost = false;
+                if(host.SubscriptionDate >=  hostFiltringParameters.ViewDate)
+                {
+                    lastEvent = host.SubscriptionDate;
+                    dumpHost = true;
+                }
+                    
+                var hostprefix = $"{host.Id};{ host.Name};{host.Network};{host.Identity};{ host.Mail};{ host.Site};{host.SubscriptionDate.ToString("dd/MM/yyyy HH:mm:ss")}";
                 if (host.Licenses.Count > 0)
                 {
-                    foreach (var license in host.Licenses)
+                    foreach (var license in host.Licenses.Where(x => currentlicenses.Contains(x.ProductKey)))
                     {
-                        prefix = $"{prefix};{ license.InstallationId};{ license.ExtendedProductId};{license.InstallationDate.ToString("dd/MM/yyyy HH:mm:ss")}";
+                        lastEvent = license.InstallationDate;
+                        var licenseprefix = $"{hostprefix};{ license.InstallationId};{ license.ExtendedProductId};{license.ProductKey};{license.InstallationDate.ToString("dd/MM/yyyy HH:mm:ss")}";
                         var confirmations = license.Confirmations.Where(x => x.HasSucceeded);
                         if (confirmations.Any())
                         {
                             foreach (var confirmation in confirmations)
                             {
-                                prefix = $"{prefix};{confirmation.Content};{confirmation.ResponseDate}";
-                                var successStatus = host.Licenses.Any(x => x.Activation != null);
-                                if (successStatus)
+                                lastEvent = confirmation.ResponseDate;
+                                var prefix = $"{licenseprefix};{confirmation.Content};{confirmation.ResponseDate}";
+                                if (license.Activation != null)
                                 {
-                                    stringBuilder.AppendLine($"{prefix};LicenseActivated;");
+                                    stringBuilder.AppendLine($"{prefix};LicenseActivated;{license.Activation.ActivationDate}");
                                 }
                                 else
                                 {
@@ -49,20 +71,23 @@ namespace ESU.Monitoring.Core
                         }
                         else
                         {
-                            stringBuilder.AppendLine(prefix);
+                            stringBuilder.AppendLine(licenseprefix);
                         }
                     }
                 }
                 else
                 {
-                    var status = host.ProcessingStatus.LastOrDefault(x => !x.Message.Contains("activated"));
+                    var status = host.ProcessingStatus?.LastOrDefault(x =>x.StatusDate > lastEvent);
                     if (status != null)
                     {
-                        stringBuilder.AppendLine($"{prefix};;;;;;{status.Message};{status.StatusDate.ToString("dd/MM/yyyy HH:mm:ss")}");
+                        stringBuilder.AppendLine($"{hostprefix};;;;;;;{status.Message};{status.StatusDate.ToString("dd/MM/yyyy HH:mm:ss")}");
                     }
                     else
                     {
-                        stringBuilder.AppendLine(prefix);
+                        if (dumpHost)
+                        {
+                            stringBuilder.AppendLine(hostprefix);
+                        }
                     }
                 }
             }

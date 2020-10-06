@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ESU.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ESU.MonitoringWS.Controllers
@@ -13,7 +14,7 @@ namespace ESU.MonitoringWS.Controllers
         [HttpGet]
         public string Get()
         {
-            return $"ESU Collect web service Version : {this.GetType().Assembly.GetName().Version}";
+            return $"ESU Collect web service Version : {this.GetType().Assembly.GetName().Version}.\nESU Data Version {typeof(Host).Assembly.GetName().Version}.";
         }
     }
 }

@@ -1,13 +1,11 @@
-﻿using ESU.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using ESU.Data;
 using ESU.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 
 namespace ESU.CollectWS.Controllers
 {

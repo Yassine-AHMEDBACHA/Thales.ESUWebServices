@@ -21,7 +21,7 @@ namespace ESU.Monitoring.Core
             this.context = context;
         }
 
-        public IDictionary<DateTime, Stat> GetStats(int histoDeepth)
+        public async Task<IDictionary<DateTime, Stat>> GetStats(int histoDeepth)
         {
             var minDate = DateTime.Today.AddDays(-histoDeepth);
 
@@ -30,7 +30,7 @@ namespace ESU.Monitoring.Core
 
             var filter = new HostFilteringParameters(minDate);
 
-            var hosts = this.hostService.LoadHost(filter);
+            var hosts = await this.hostService.LoadHostAsync(filter);
 
             foreach (var host in hosts)
             {

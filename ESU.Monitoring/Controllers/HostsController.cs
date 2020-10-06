@@ -2,8 +2,12 @@
 using ESU.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Serilog.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ESU.Monitoring.Controllers
@@ -21,7 +25,7 @@ namespace ESU.Monitoring.Controllers
             this.hostService = hostService;
         }
 
-        [HttpGet("/count")]
+        [HttpGet("count")]
         public async Task<int> count()
         {
             return await this.hostService.CountAsync();
@@ -30,13 +34,23 @@ namespace ESU.Monitoring.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Host>> GetById(int id)
         {
+            var tt = Stopwatch.StartNew();
             var host = await this.hostService.FindAsync(id);
-
+            var s = tt.Elapsed;
             if (host == null)
             {
                 return NotFound();
             }
 
+            if (host.Licenses.All(x => x.Activation != null))
+            {
+                host.ProcessingStatus = new[] { new ProcessingStatus { Message = "License Activated" } };
+            }
+            else
+            {
+                host.ProcessingStatus = new[] { new ProcessingStatus { Message = host.Status.LastOrDefault()?.Message } };
+            }
+            tt.Stop();
             return Ok(host);
         }
 
@@ -54,7 +68,7 @@ namespace ESU.Monitoring.Controllers
 
                 return Ok(hosts);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Problem(ex.Message);
             }

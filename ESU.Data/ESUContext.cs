@@ -27,9 +27,7 @@ namespace ESU.Data
 
         public DbSet<Activation> Activations { get; set; }
 
-        public DbSet<CurrentHost> CurrentHosts { get; set; }
-
-
+        public DbSet<Key> ProductKeys { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -41,9 +39,8 @@ namespace ESU.Data
             modelBuilder.Entity<Host>()
                 .ToTable("Hosts");
 
-            modelBuilder.Entity<CurrentHost>().ToView("CurrentHosts")
-                .HasNoKey();
-                
+            modelBuilder.Entity<Key>().ToTable("Keys");
+
 
             modelBuilder.Entity<Confirmation>().ToTable("Confirmations")
                 .HasOne(x => x.License);

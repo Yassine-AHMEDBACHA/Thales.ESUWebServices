@@ -18,6 +18,8 @@ namespace ESU.Data.Models
 
         public DateTime MaxDate { get; set; }
 
+        public DateTime ViewDate { get; set; } = new DateTime(DateTime.Now.Date.Year, 1, 1);
+
         public int Id { get; set; }
 
         public string Name { get; set; }
@@ -34,7 +36,7 @@ namespace ESU.Data.Models
 
         public int Offset { get; set; }
 
-        public bool WithStatus { get; set; } = true;
+        public bool WithStatus { get; set; } = false;
 
         public bool WithLicenses { get; set; } = true;
 
