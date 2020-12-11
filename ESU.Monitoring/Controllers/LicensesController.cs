@@ -1,4 +1,5 @@
 ﻿using ESU.Data;
+using ESU.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -30,6 +31,5 @@ namespace ESU.MonitoringWS.Controllers
 
             return count;
         }
-
     }
 }

@@ -25,12 +25,12 @@ namespace ESU.Data
 
         public List<Host> LoadHost(HostFilteringParameters filtringParameters = null)
         {
-            return  this.LoadHostAsync(filtringParameters).Result;
+            return this.LoadHostAsync(filtringParameters).Result;
         }
 
         private IQueryable<Host> GetHostQuery(HostFilteringParameters filtringParameters = null)
         {
-            
+
             var query = this.context.Hosts
                 .AsNoTracking()
                 .AsQueryable();
@@ -106,7 +106,7 @@ namespace ESU.Data
         {
             return this.context.Hosts.Count();
         }
-        
+
         public Task<int> CountAsync()
         {
             return this.context.Hosts.CountAsync();
@@ -124,10 +124,20 @@ namespace ESU.Data
                 .ThenInclude(x => x.Confirmations)
                 .Include(x => x.Licenses)
                 .ThenInclude(x => x.Activation)
-                .Include(x=>x.Status)
+                .Include(x => x.Status)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-                return host;
+            return host;
+        }
+
+        public Task<List<string>> GetProductKies(DateTime viewDate)
+        {
+            var currentlicenses = this.context.ProductKies
+               .Where(x => viewDate >= x.StartDate && viewDate < x.EndDate)
+               .Select(x => x.ProductKey)
+               .ToListAsync();
+
+            return currentlicenses;
         }
     }
 }

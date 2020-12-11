@@ -38,6 +38,8 @@ namespace ESU.Data.Models
 
         public bool WithStatus { get; set; } = false;
 
+        public bool Raw { get; set; } = false;
+
         public bool WithLicenses { get; set; } = true;
 
         public bool WithConfirmations { get; set; } = true;

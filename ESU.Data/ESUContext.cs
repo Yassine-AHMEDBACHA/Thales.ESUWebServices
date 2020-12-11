@@ -27,7 +27,7 @@ namespace ESU.Data
 
         public DbSet<Activation> Activations { get; set; }
 
-        public DbSet<Key> ProductKeys { get; set; }
+        public DbSet<Key> ProductKies { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

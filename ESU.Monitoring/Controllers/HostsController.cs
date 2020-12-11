@@ -2,12 +2,10 @@
 using ESU.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Serilog.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace ESU.Monitoring.Controllers
@@ -66,12 +64,47 @@ namespace ESU.Monitoring.Controllers
                     return NotFound();
                 }
 
-                return Ok(hosts);
+                if (filter.Raw)
+                {
+                    return Ok(hosts);
+                }
+                else
+                {
+                    var currentlicenses = await hostService.GetProductKies(filter.ViewDate);
+                    return Ok(this.FilterHosts(hosts, currentlicenses));
+                }
             }
             catch (Exception ex)
             {
                 return Problem(ex.Message);
             }
         }
+
+        private IEnumerable<Host> FilterHosts(IEnumerable<Host> hosts, List<string> currentlicenses)
+        {
+            foreach (var host in hosts)
+            {
+                var visibleLicenses = host.Licenses.Where(x => currentlicenses.Contains(x.ProductKey)).ToList();
+                if (visibleLicenses.Count > 0)
+                {
+                    host.Licenses = visibleLicenses;
+                    if (visibleLicenses.First().Activation != null)
+                    {
+                        var status = new ProcessingStatus
+                        {
+                            HostId = host.Id,
+                            Message = "License activated.",
+                            StatusDate =
+                            visibleLicenses.First().Activation.ActivationDate
+                        };
+
+                        host.ProcessingStatus = new List<ProcessingStatus>() { status };
+                    }
+
+                    yield return host;
+                }
+            }
+        }
+
     }
 }
