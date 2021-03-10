@@ -100,11 +100,14 @@ namespace ESU.Monitoring.Controllers
 
                         host.ProcessingStatus = new List<ProcessingStatus>() { status };
                     }
-
-                    yield return host;
                 }
+                else
+                {
+                    host.Licenses = new List<License>();   
+                }
+
+                yield return host;
             }
         }
-
     }
 }
