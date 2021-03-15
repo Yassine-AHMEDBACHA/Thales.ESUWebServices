@@ -38,9 +38,9 @@ namespace ESU.Data
             if (filtringParameters.MinDate > DateTime.MinValue)
             {
                 query = query.Where(x => x.SubscriptionDate >= filtringParameters.MinDate);
-                if (filtringParameters.MaxDate > filtringParameters.MinDate)
+                if (filtringParameters.MaxDate >= filtringParameters.MinDate)
                 {
-                    query = query.Where(x => x.SubscriptionDate < filtringParameters.MaxDate);
+                    query = query.Where(x => x.SubscriptionDate <= filtringParameters.MaxDate);
                 }
             }
 
@@ -110,12 +110,6 @@ namespace ESU.Data
         public Task<int> CountAsync()
         {
             return this.context.Hosts.CountAsync();
-        }
-
-        public async Task<int> FiltredCountAsync(HostFilteringParameters filteringParameters)
-        {
-            var query = this.GetHostQuery(filteringParameters);
-            return await query.CountAsync();
         }
 
         public Host Find(int id)

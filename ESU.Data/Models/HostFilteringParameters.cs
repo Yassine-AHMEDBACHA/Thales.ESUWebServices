@@ -11,7 +11,7 @@ namespace ESU.Data.Models
 
         public HostFilteringParameters(DateTime minDate)
         {
-            this.MinDate = minDate;
+            this.MinDate = this.MaxDate = minDate;
         }
 
         public DateTime MinDate { get; set; }

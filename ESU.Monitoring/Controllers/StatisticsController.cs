@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using ESU.Data;
+﻿using ESU.Data;
+using ESU.Monitoring.Core;
 using ESU.Monitoring.Models;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ESU.Monitoring.Controllers
 {
@@ -10,29 +13,32 @@ namespace ESU.Monitoring.Controllers
     [Route("api/[controller]")]
     public class StatisticsController : ControllerBase
     {
-        
+        private readonly StatisticsProvider statisticsProvider;
         private readonly ESUContext context;
 
-        public StatisticsController( ESUContext context)
+        public StatisticsController(StatisticsProvider statisticsProvider, ESUContext context)
         {
-            
+            this.statisticsProvider = statisticsProvider;
             this.context = context;
         }
 
-        [HttpGet]
-        public async Task<IEnumerable< Stat>> GetAll()
+        [HttpGet("{histoDeepth}")]
+        public ActionResult<IDictionary<DateTime, Stat>> GetAllHosts(int histoDeepth)
         {
-            return await Task.Factory.StartNew<IEnumerable<Stat>>(() =>
-            {
-                var stats = new List<Stat>();
-                stats.Add(new Stat { Caption = "Today", Activated = 100, Failed = 0, InProgress = 32, Subscribed = 50 });
-                stats.Add(new Stat { Caption = "J-1", Activated = 52, Failed = 10, InProgress = 552, Subscribed = 1000 });
-
-
-                stats.Add(new Stat { Caption = "Total", Activated = 65000, Failed = 3500, InProgress = 3235, Subscribed = 798 });
-                return stats;
-            });
+            return Ok(statisticsProvider.GetStats(histoDeepth));
         }
-       
+
+        [HttpGet()]
+        public ActionResult<IDictionary<DateTime, Stat>> GetAllHosts()
+        {
+            return Ok(statisticsProvider.GetStats(0));
+        }
+
+        [HttpGet("all")]
+        public async Task<ActionResult<Stat>> GetAll()
+        {
+            var stat = await this.statisticsProvider.All();
+            return Ok(stat);
+        }
     }
 }
