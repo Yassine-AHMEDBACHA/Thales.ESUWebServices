@@ -34,7 +34,6 @@ namespace ESU.Monitoring
         {
             services.AddHealthChecks();
             services.AddControllers();
-            services.AddScoped<StatisticsProvider>();
             services.AddScoped<HostService>();
             services.AddScoped<HostReportProvider>();
             services.AddSingleton<HostAnalyzer>();
@@ -57,6 +56,11 @@ namespace ESU.Monitoring
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(x => x
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
 
             app.UseAuthorization();
 
