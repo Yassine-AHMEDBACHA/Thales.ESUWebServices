@@ -18,9 +18,15 @@ namespace ESU.DashbordWS.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Stat>>> GetStat()
+        public async Task< ActionResult<IEnumerable<Stat>>> GetStat()
         {
-            return await this.provider.GetStats();
+            return  await this.provider.GetStats();
+        }
+
+        [HttpGet("last")]
+        public async Task<Stat> GetLastStat()
+        {
+            return await this.provider.GetLastStats();
         }
     }
 }
