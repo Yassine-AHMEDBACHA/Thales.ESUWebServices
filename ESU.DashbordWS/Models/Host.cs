@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace ESU.Data.Models
 {
@@ -16,12 +17,12 @@ namespace ESU.Data.Models
 
         public string Mail { get; set; }
 
-        public string OsBuild { get; set; }
+        public string ProductKey { get; set; }
 
-        public string OsVersion { get; set; }
+        public int? ProductKeyId { get; set; }
 
-        public bool Is64BitOperatingSystem { get; set; }
+        public string Status { get; set; }
 
-        public DateTime SubscriptionDate { get; set; }
-    }
+        internal static string[] Headers => typeof(Host).GetProperties().Select(x => x.Name).ToArray();
+}
 }

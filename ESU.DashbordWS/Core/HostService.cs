@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ESU.DashbordWS.Extensions;
+﻿using ESU.DashbordWS.Extensions;
 using ESU.DashbordWS.Infrastructures;
 using ESU.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ESU.DashbordWS.Core
 {
@@ -38,24 +37,19 @@ namespace ESU.DashbordWS.Core
                 return query;
             }
 
-            if(parameters.Limit > 0)
+            if (parameters.ProductKeyId > 0)
             {
-                query = query.Take(parameters.Limit);
+                query = query.Where(x => x.ProductKeyId.Equals(parameters.ProductKeyId));
             }
 
-            if(parameters.Name.IsValid())
+            if (parameters.Name.IsValid())
             {
                 query = query.Where(x => x.Name.StartsWith(parameters.Name));
             }
 
-            if(parameters.Offset> 0)
-            {
-                query = query.Skip(parameters.Offset);
-            }
-            
             if(parameters.Network.IsValid())
             {
-                query = query.Where(x => x.Network.StartsWith(parameters.Name));
+                query = query.Where(x => x.Network.StartsWith(parameters.Network));
             }
 
             if (parameters.Site.IsValid())
@@ -71,6 +65,16 @@ namespace ESU.DashbordWS.Core
             if (parameters.Mail.IsValid())
             {
                 query = query.Where(x => x.Mail.StartsWith(parameters.Mail));
+            }
+
+            if (parameters.Offset > 0)
+            {
+                query = query.Skip(parameters.Offset);
+            }
+
+            if (parameters.Limit > 0)
+            {
+                query = query.Take(parameters.Limit);
             }
 
             return query;

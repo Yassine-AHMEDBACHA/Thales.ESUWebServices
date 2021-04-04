@@ -30,7 +30,7 @@ namespace ESU.DashbordWS.Infrastructures
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Host>().ToTable("Hosts");
+            modelBuilder.Entity<Host>().ToView("HostMonitoring");
 
             modelBuilder.Entity<Stat>().HasNoKey().ToView(null).Ignore(x => x.Caption);
         }

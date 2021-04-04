@@ -14,8 +14,11 @@
 
         public string Entity { get; set; }
 
+        public int ProductKeyId { get; set; }
+
         public int Limit { get; set; }
 
         public int Offset { get; set; }
+
     }
 }

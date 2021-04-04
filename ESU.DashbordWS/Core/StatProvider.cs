@@ -19,29 +19,33 @@ namespace ESU.DashbordWS.Core
 
         internal async Task<List<Stat>> GetStats()
         {
+            return await Task.Factory.StartNew(NewMethod);
+        }
 
-            var today = await this.GetStat("Today", DateTime.Today);
-            var yesterday = await this.GetStat("yesterday", DateTime.Today.AddDays(-2));
-            var all = await this.GetStat("all", new DateTime(DateTime.Today.Year, 01, 01), DateTime.Today);
+        private List<Stat> NewMethod()
+        {
+            var today = this.GetStat("Today", DateTime.Today);
+            var yesterday = this.GetStat("Yesterday", DateTime.Today.AddDays(-2));
+            var all = this.GetStat("All", new DateTime(DateTime.Today.Year, 01, 01), DateTime.Today);
             return new List<Stat> { today, yesterday, all };
         }
 
         internal async Task<Stat> GetLastStats()
         {
-            var today = await this.GetStat("Today", DateTime.Today);
+            var today = await Task.Factory.StartNew<Stat>(()=> this.GetStat("Today", DateTime.Today));
             return today;
         }
 
-        private async Task<Stat> GetStat(string caption, DateTime date)
+        private Stat GetStat(string caption, DateTime date)
         {
             var nextDay = date.AddDays(1);
-            return await this.GetStat(caption, date, nextDay);
+            return this.GetStat(caption, date, nextDay);
         }
 
-        private async Task<Stat> GetStat(string caption, DateTime date, DateTime nextDate)
+        private  Stat GetStat(string caption, DateTime date, DateTime nextDate)
         {
             var query = $"exec GetStats '{date:yyyy/MM/dd}','{nextDate:yyyy/MM/dd}'";
-            var stat = (await this.context.Stats.FromSqlRaw(query).ToListAsync()).FirstOrDefault();
+            var stat =  this.context.Stats.FromSqlRaw(query).AsEnumerable().FirstOrDefault();
             stat.Caption = caption;
             return stat;
         }

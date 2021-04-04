@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using ESU.DashbordWS.Core;
+﻿using ESU.DashbordWS.Core;
 using ESU.DashbordWS.Infrastructures;
-using ESU.DashbordWS.Models;
 using ESU.Data.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ESU.DashbordWS.Controllers
 {
