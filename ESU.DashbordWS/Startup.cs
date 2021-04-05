@@ -66,7 +66,12 @@ namespace ESU.DashbordWS
 
             //app.UseIdentityServer();
 
-            app.UseCors(app => app.AllowAnyOrigin());
+            app.UseCors(app =>
+            {
+                app.AllowAnyOrigin();
+               // app.AllowAnyMethod();
+                app.AllowAnyHeader();
+            });
 
             //app.UseAuthorization();
 
