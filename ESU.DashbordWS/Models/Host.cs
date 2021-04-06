@@ -19,6 +19,8 @@ namespace ESU.Data.Models
 
         public string ProductKey { get; set; }
 
+        public string ConfirmationKey { get; set; }
+
         public int? ProductKeyId { get; set; }
 
         public string Status { get; set; }
